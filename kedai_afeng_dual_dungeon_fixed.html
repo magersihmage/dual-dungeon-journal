@@ -1,0 +1,4534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kedai Afeng — Dual Dungeon Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #10233f;
+    --ink2: #345174;
+    --ink3: #5f7ea3;
+    --ink4: #b8b4ae;
+    --paper: #f5f9ff;
+    --paper2: #e9f2ff;
+    --paper3: #dbe9ff;
+    --gold: #4f8cff;
+    --gold2: #7eb0ff;
+    --teal: #1D9E75;
+    --coral: #D85A30;
+    --border: rgba(90,80,60,0.12);
+    --border2: rgba(79,140,255,0.18);
+    --shadow: rgba(30,20,10,0.08);
+  }
+
+  /* ─── SOLANA DUNGEON THEME ─── */
+  body.dungeon-sol {
+    --ink: #1a0a2e;
+    --ink2: #3d2060;
+    --ink3: #7a5aaa;
+    --ink4: #b8a8ce;
+    --paper: #f8f5ff;
+    --paper2: #f0eaff;
+    --paper3: #e2d5ff;
+    --gold: #9945ff;
+    --gold2: #c080ff;
+    --teal: #14F195;
+    --coral: #E84142;
+    --border: rgba(80,40,120,0.12);
+    --border2: rgba(153,69,255,0.2);
+    --shadow: rgba(40,10,80,0.1);
+  }
+
+  /* ─── DUNGEON SELECT PAGE ─── */
+  #dungeon-page { z-index: 8; }
+
+  .dungeon-wrap {
+    width: 100%; max-width: 420px;
+    padding: 2.5rem 1.8rem;
+    text-align: center;
+  }
+
+  .dungeon-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 200; font-size: 20px;
+    letter-spacing: 0.12em; color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .dungeon-sub {
+    font-size: 10px; letter-spacing: 0.3em; color: var(--ink3);
+    text-transform: uppercase; margin-bottom: 2.5rem;
+  }
+  .dungeon-label {
+    font-size: 10px; letter-spacing: 0.2em; color: var(--ink4);
+    text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .dungeon-cards {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-bottom: 2rem;
+  }
+  .dungeon-card {
+    position: relative;
+    border-radius: 20px; padding: 1.8rem 1rem 1.5rem;
+    cursor: pointer; text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.25s ease;
+    overflow: hidden;
+  }
+  .dungeon-card.base-card {
+    background: linear-gradient(145deg, #eaf3ff, #dbeaff);
+    border-color: rgba(79,140,255,0.3);
+    box-shadow: 0 8px 28px rgba(79,140,255,0.15);
+  }
+  .dungeon-card.sol-card {
+    background: linear-gradient(145deg, #f3eaff, #e8d8ff);
+    border-color: rgba(153,69,255,0.3);
+    box-shadow: 0 8px 28px rgba(153,69,255,0.15);
+  }
+  .dungeon-card:hover { transform: translateY(-4px); }
+  .dungeon-card.base-card:hover { box-shadow: 0 16px 40px rgba(79,140,255,0.28); border-color: #4f8cff; }
+  .dungeon-card.sol-card:hover { box-shadow: 0 16px 40px rgba(153,69,255,0.28); border-color: #9945ff; }
+
+  .dungeon-card-icon {
+    font-size: 40px; margin-bottom: 12px; display: block;
+  }
+  .dungeon-card-name {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300; font-size: 16px; letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .dungeon-card-name.base-name { color: #1a3a6a; }
+  .dungeon-card-name.sol-name { color: #3a1060; }
+
+  .dungeon-card-tag {
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 999px; font-weight: 600;
+  }
+  .base-card .dungeon-card-tag { background: rgba(79,140,255,0.15); color: #2c6fd6; }
+  .sol-card .dungeon-card-tag { background: rgba(153,69,255,0.15); color: #7730cc; }
+
+  .dungeon-card-desc {
+    font-size: 11px; color: var(--ink3); margin-top: 8px; line-height: 1.5;
+  }
+
+  .dungeon-sources {
+    display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
+    margin-top: 8px;
+  }
+  .dungeon-source-pill {
+    font-size: 8px; padding: 2px 7px; border-radius: 999px;
+    font-weight: 600; letter-spacing: 0.05em;
+  }
+  .base-card .dungeon-source-pill { background: rgba(79,140,255,0.1); color: #2c5baa; }
+  .sol-card .dungeon-source-pill { background: rgba(153,69,255,0.1); color: #6622bb; }
+
+  .dungeon-card-glow {
+    position: absolute; inset: 0; opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
+  }
+  .base-card .dungeon-card-glow { background: radial-gradient(circle at 50% 0%, rgba(79,140,255,0.15), transparent 70%); }
+  .sol-card .dungeon-card-glow { background: radial-gradient(circle at 50% 0%, rgba(153,69,255,0.18), transparent 70%); }
+  .dungeon-card:hover .dungeon-card-glow { opacity: 1; }
+
+  /* network badge in check page */
+  .token-network-badge { font-size: 9px; padding: 3px 9px; border-radius: 999px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+  body:not(.dungeon-sol) .token-network-badge { background: rgba(79,140,255,0.12); color: #2c5baa; }
+  body.dungeon-sol .token-network-badge { background: rgba(153,69,255,0.12); color: #7730cc; }
+
+  /* Solana data source badges */
+  .source-badges { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .source-badge {
+    font-size: 8px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid;
+  }
+  .source-badge.active { font-weight: 700; }
+  .source-badge.gecko { border-color: rgba(79,180,120,0.4); color: #2a7a50; background: rgba(79,180,120,0.08); }
+  .source-badge.birdeye { border-color: rgba(255,150,30,0.4); color: #9a5510; background: rgba(255,150,30,0.08); }
+  .source-badge.gmgn { border-color: rgba(153,69,255,0.4); color: #6622bb; background: rgba(153,69,255,0.08); }
+  .source-badge.jupiter { border-color: rgba(30,150,255,0.4); color: #1065cc; background: rgba(30,150,255,0.08); }
+
+  html, body {
+    height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    overflow: hidden;
+  }
+
+  #sakura-canvas {
+    position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  }
+
+  .page {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.1s;
+  }
+  .page.active { opacity: 1; pointer-events: all; }
+
+  #page-turn {
+    position: fixed; inset: 0; z-index: 1000;
+    pointer-events: none;
+    perspective: 1200px;
+  }
+  .turn-leaf {
+    position: absolute; top: 0; right: 0;
+    width: 50%; height: 100%;
+    background: var(--paper2);
+    transform-origin: left center;
+    transform: rotateY(0deg);
+    backface-visibility: hidden;
+    border-left: 1px solid var(--border2);
+    box-shadow: -8px 0 32px rgba(30,20,10,0.12);
+    opacity: 0;
+    transition: none;
+  }
+  .turn-leaf::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(30,20,10,0.08) 0%, transparent 30%);
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(184,146,58,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(29,158,117,0.03) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='20' cy='20' rx='20' ry='20' fill='none' stroke='%23b8923a' stroke-width='1'/%3E%3Cellipse cx='0' cy='20' rx='20' ry='20' fill='none' stroke='%23b8923a' stroke-width='1'/%3E%3Cellipse cx='40' cy='20' rx='20' ry='20' fill='none' stroke='%23b8923a' stroke-width='1'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* ════ LOGIN ════ */
+  #login-page { z-index: 10; }
+
+  .login-box {
+    position: relative; z-index: 1;
+    width: 340px;
+    background: var(--paper);
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    padding: 3rem 2.5rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 2px 40px var(--shadow), 0 0 0 1px var(--border);
+  }
+
+  .login-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .torii-svg { margin-bottom: 1.5rem; display: block; margin-left: auto; margin-right: auto; }
+
+  .login-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 200; font-size: 22px;
+    letter-spacing: 0.12em; color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .login-kanji {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 11px; letter-spacing: 0.3em; color: var(--ink3);
+    margin-bottom: 2rem;
+  }
+
+  .divider-ornament {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.8rem;
+  }
+  .divider-ornament::before, .divider-ornament::after {
+    content: ''; flex: 1; height: 0.5px; background: var(--border2);
+  }
+  .divider-ornament span { font-size: 12px; color: var(--gold); letter-spacing: 0.2em; }
+
+  .input-group { margin-bottom: 1.2rem; text-align: left; }
+  .input-label {
+    display: block; font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink3); margin-bottom: 8px;
+  }
+
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-prefix { position: absolute; left: 12px; font-size: 15px; color: var(--ink3); }
+  .input-field {
+    width: 100%; padding: 10px 12px 10px 36px;
+    background: var(--paper2); border: 1px solid var(--border2);
+    border-radius: 2px; font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 14px; color: var(--ink); outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-field:focus { border-color: var(--gold); }
+  .input-field::placeholder { color: var(--ink4); }
+
+  .login-btn {
+    width: 100%; padding: 12px;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 2px;
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px; letter-spacing: 0.15em;
+    cursor: pointer; transition: background 0.2s, transform 0.1s;
+    margin-bottom: 0.8rem;
+  }
+  .login-btn:hover { background: var(--ink2); }
+  .login-btn:active { transform: scale(0.99); }
+
+  .login-note { font-size: 11px; color: var(--ink4); line-height: 1.6; }
+
+  .kedai-brand {
+    margin-top: 2rem;
+    font-family: 'Noto Serif JP', serif; font-weight: 300; font-size: 11px;
+    letter-spacing: 0.4em; color: var(--ink4); text-transform: uppercase;
+  }
+  .kedai-brand span { color: var(--gold); }
+
+  /* ════ HOME ════ */
+  #home-page { z-index: 5; align-items: stretch; }
+
+  .home-wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    height: 100dvh; overflow-y: auto;
+    padding: 0 0 80px; scrollbar-width: none;
+  }
+  .home-wrap::-webkit-scrollbar { display: none; }
+
+  .home-header {
+    padding: 2rem 1.5rem 1.2rem;
+    border-bottom: 0.5px solid var(--border);
+    position: relative;
+  }
+  .home-header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.8rem;
+  }
+  .user-greeting { font-size: 12px; color: var(--ink3); letter-spacing: 0.05em; }
+  .user-greeting strong { color: var(--ink); font-weight: 500; }
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
+    width: 32px; height: 32px;
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--ink3); transition: background 0.15s;
+  }
+  .icon-btn:hover { background: var(--paper3); }
+
+  .home-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 200; font-size: 20px;
+    letter-spacing: 0.1em; color: var(--ink); line-height: 1.3;
+  }
+  .home-title-sub {
+    font-size: 10px; color: var(--gold);
+    letter-spacing: 0.3em; text-transform: uppercase; margin-top: 2px;
+  }
+
+  .kamon-float {
+    position: absolute; right: 1.5rem; top: 50%;
+    transform: translateY(-50%); opacity: 0.06;
+    animation: kamon-spin 60s linear infinite;
+  }
+  @keyframes kamon-spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+  .section { padding: 1.2rem 1.5rem 0; }
+  .section-label {
+    font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink3);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+
+  .stat-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; margin-bottom: 0;
+  }
+  .stat-card {
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 12px 14px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .stat-card:hover { background: var(--paper3); }
+  .stat-lbl { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+  .stat-val { font-size: 20px; font-weight: 500; line-height: 1; }
+  .stat-sub { font-size: 10px; color: var(--ink3); margin-top: 3px; }
+  .c-good { color: var(--teal); }
+  .c-bad { color: var(--coral); }
+  .c-neutral { color: var(--ink2); }
+  .c-gold { color: var(--gold); }
+
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .action-card {
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 16px 14px;
+    cursor: pointer; text-align: left;
+    transition: background 0.15s, border-color 0.15s;
+    position: relative; overflow: hidden;
+  }
+  .action-card:hover { background: var(--paper2); border-color: var(--gold); }
+  .action-card:hover .action-card-icon { color: var(--gold); }
+  .action-card-icon { font-size: 18px; color: var(--ink3); margin-bottom: 10px; display: block; transition: color 0.15s; }
+  .action-card-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+  .action-card-desc { font-size: 11px; color: var(--ink3); line-height: 1.5; }
+  .action-card-corner {
+    position: absolute; bottom: 8px; right: 10px;
+    font-size: 9px; letter-spacing: 0.1em; color: var(--ink4);
+    font-family: 'Noto Serif JP', serif;
+  }
+
+  .feed {
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; overflow: hidden;
+  }
+  .feed-header {
+    padding: 10px 14px; border-bottom: 0.5px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .feed-header-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; color: var(--ink2); }
+  .feed-header-count { font-size: 10px; color: var(--ink4); }
+
+  .feed-row {
+    padding: 12px 14px; border-bottom: 0.5px solid var(--border);
+    display: grid; grid-template-columns: 1fr auto auto auto;
+    gap: 8px; align-items: center;
+    cursor: pointer; transition: background 0.12s;
+  }
+  .feed-row:last-child { border-bottom: none; }
+  .feed-row:hover { background: var(--paper2); }
+  .feed-token { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .feed-meta { font-size: 10px; color: var(--ink4); margin-top: 2px; }
+  .feed-mood { font-size: 14px; }
+  .feed-pnl { font-size: 13px; font-weight: 500; text-align: right; min-width: 46px; }
+  .mood-chip {
+    font-size: 9px; padding: 2px 7px;
+    border-radius: 20px; letter-spacing: 0.08em; white-space: nowrap;
+  }
+  .chip-calm { background: rgba(29,158,117,0.1); color: #0F6E56; }
+  .chip-fomo { background: rgba(216,90,48,0.1); color: #993C1D; }
+  .chip-ok { background: rgba(184,146,58,0.1); color: #8a6020; }
+
+  .insight-box {
+    background: var(--paper2); border: 0.5px solid var(--border);
+    border-left: 2px solid var(--gold); border-radius: 0 2px 2px 0;
+    padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .insight-icon { font-size: 14px; color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+  .insight-text { font-size: 12px; color: var(--ink2); line-height: 1.6; }
+  .insight-text strong { font-weight: 500; color: var(--ink); }
+
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%; max-width: 420px;
+    background: var(--paper); border-top: 0.5px solid var(--border2);
+    display: flex; justify-content: space-around;
+    padding: 10px 0 16px; z-index: 20;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; cursor: pointer; padding: 8px 16px 6px;
+    opacity: 0.45; transition: opacity 0.15s;
+    min-width: 64px; min-height: 52px; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-item.active { opacity: 1; }
+  .nav-item:hover { opacity: 0.75; }
+  .nav-icon { font-size: 20px; color: var(--ink); }
+  .nav-label { font-size: 9px; letter-spacing: 0.1em; color: var(--ink2); text-transform: uppercase; }
+  .nav-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gold); margin: 0 auto; opacity: 0; }
+  .nav-item.active .nav-dot { opacity: 1; }
+
+  .kedai-footer {
+    text-align: center; padding: 1.5rem;
+    font-family: 'Noto Serif JP', serif; font-weight: 200;
+    font-size: 10px; letter-spacing: 0.5em; color: var(--ink4); text-transform: uppercase;
+  }
+  .kedai-footer span { color: var(--gold); }
+
+  /* ── DUAL DUNGEON FOOTER BRAND ── */
+  .dungeon-brand-footer {
+    text-align: center;
+    padding: 1.8rem 1.5rem 1.2rem;
+    position: relative;
+  }
+  .dungeon-brand-footer::before {
+    content: '';
+    display: block;
+    width: 40px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 1rem;
+  }
+  .dbf-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300;
+    font-size: 15px;
+    letter-spacing: 0.18em;
+    color: var(--ink2);
+    margin-bottom: 4px;
+  }
+  .dbf-title .dbf-dual { color: var(--gold); font-weight: 400; }
+  .dbf-title .dbf-x {
+    display: inline-block;
+    margin: 0 4px;
+    font-size: 11px;
+    opacity: 0.5;
+  }
+  .dbf-sub {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink4);
+    margin-bottom: 10px;
+  }
+  .dbf-badges {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .dbf-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 999px;
+  }
+  .dbf-badge.base { background: rgba(79,140,255,0.1); color: #2c5baa; border: 1px solid rgba(79,140,255,0.25); }
+  .dbf-badge.sol  { background: rgba(153,69,255,0.1); color: #6622bb; border: 1px solid rgba(153,69,255,0.25); }
+  .dbf-divider { font-size: 10px; color: var(--ink4); opacity: 0.5; }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim-1 { animation: fade-up 0.5s ease forwards 0.05s; opacity: 0; }
+  .anim-2 { animation: fade-up 0.5s ease forwards 0.15s; opacity: 0; }
+  .anim-3 { animation: fade-up 0.5s ease forwards 0.25s; opacity: 0; }
+  .anim-4 { animation: fade-up 0.5s ease forwards 0.35s; opacity: 0; }
+  .anim-5 { animation: fade-up 0.5s ease forwards 0.45s; opacity: 0; }
+
+  .scroll-divider {
+    display: flex; align-items: center; gap: 10px; padding: 1rem 1.5rem 0;
+  }
+  .scroll-divider-line { flex: 1; height: 0.5px; background: var(--border); }
+  .scroll-divider-glyph { font-size: 11px; color: var(--ink4); letter-spacing: 0.2em; }
+
+  /* ════ PRE-ENTRY CHECK PAGE ════ */
+  #check-page { z-index: 5; align-items: stretch; }
+
+  .check-wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    height: 100dvh; overflow-y: auto;
+    padding: 0 0 80px; scrollbar-width: none;
+  }
+  .check-wrap::-webkit-scrollbar { display: none; }
+
+  .check-header {
+    padding: 1.5rem 1.5rem 1.2rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .back-btn {
+    width: 32px; height: 32px; flex-shrink: 0;
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--ink3); transition: background 0.15s;
+  }
+  .back-btn:hover { background: var(--paper3); }
+
+  .check-header-text { flex: 1; }
+  .check-header-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 200; font-size: 17px; letter-spacing: 0.08em;
+  }
+  .check-header-sub { font-size: 10px; color: var(--gold); letter-spacing: 0.25em; text-transform: uppercase; margin-top: 2px; }
+
+  /* CA input */
+  .ca-input-section { padding: 1.2rem 1.5rem; }
+
+  .ca-input-wrap {
+    position: relative;
+    background: var(--paper2);
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .ca-input-wrap:focus-within { border-color: var(--gold); }
+
+  .ca-label-top {
+    padding: 10px 14px 6px;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink3);
+  }
+
+  .ca-field {
+    width: 100%;
+    padding: 4px 14px 12px;
+    background: transparent; border: none; outline: none;
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12px; color: var(--ink);
+    resize: none; line-height: 1.5;
+  }
+  .ca-field::placeholder { color: var(--ink4); font-size: 11px; }
+
+  .ca-actions {
+    display: flex; gap: 8px; margin-top: 10px;
+  }
+
+  .btn-check {
+    flex: 1; padding: 12px;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 2px;
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px; letter-spacing: 0.1em;
+    cursor: pointer; transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn-check:hover { background: var(--ink2); }
+  .btn-check:disabled { background: var(--ink4); cursor: not-allowed; }
+
+  .btn-clear {
+    width: 44px; height: 44px;
+    background: var(--paper3); border: 0.5px solid var(--border2);
+    border-radius: 2px; cursor: pointer; font-size: 15px; color: var(--ink3);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .btn-clear:hover { background: var(--paper3); color: var(--coral); }
+
+  /* Loading state */
+  .check-loading {
+    padding: 2rem 1.5rem; text-align: center; display: none;
+  }
+  .check-loading.active { display: block; }
+  .loading-torii { margin: 0 auto 1rem; display: block; animation: torii-pulse 1.5s ease-in-out infinite; }
+  @keyframes torii-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .loading-text { font-size: 11px; color: var(--ink3); letter-spacing: 0.15em; }
+  .loading-steps { margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .loading-step {
+    font-size: 10px; color: var(--ink4);
+    padding: 4px 8px; border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .loading-step.active { color: var(--gold); }
+  .loading-step.done { color: var(--teal); }
+
+  /* Result panel */
+  .check-result { padding: 0 1.5rem; display: none; }
+  .check-result.active { display: block; }
+
+  /* Token hero */
+  .token-hero {
+    background: var(--paper2);
+    border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 16px;
+    margin-bottom: 12px; position: relative; overflow: hidden;
+  }
+  .token-hero::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .token-hero-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .token-name-block {}
+  .token-symbol { font-size: 18px; font-weight: 500; color: var(--ink); }
+  .token-name { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+  .token-network-badge {
+    font-size: 9px; padding: 3px 8px; border-radius: 20px;
+    background: rgba(0,82,255,0.08); color: #0052ff;
+    border: 0.5px solid rgba(0,82,255,0.2); letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .token-price-row {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .token-price { font-size: 22px; font-weight: 500; color: var(--ink); }
+  .token-price-change { font-size: 13px; font-weight: 500; }
+  .token-stats-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .token-stat-item {}
+  .token-stat-lbl { font-size: 9px; color: var(--ink4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+  .token-stat-val { font-size: 13px; font-weight: 500; color: var(--ink); }
+
+  /* Risk meter */
+  .risk-section {
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 16px; margin-bottom: 12px;
+  }
+  .risk-label-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .risk-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); }
+  .risk-badge {
+    font-size: 10px; padding: 3px 10px; border-radius: 20px;
+    font-weight: 500; letter-spacing: 0.06em;
+  }
+  .risk-low { background: rgba(29,158,117,0.12); color: #0F6E56; border: 0.5px solid rgba(29,158,117,0.3); }
+  .risk-mid { background: rgba(184,146,58,0.12); color: #8a6020; border: 0.5px solid rgba(184,146,58,0.3); }
+  .risk-high { background: rgba(216,90,48,0.12); color: #993C1D; border: 0.5px solid rgba(216,90,48,0.3); }
+  .risk-extreme { background: rgba(216,30,30,0.12); color: #8B0000; border: 0.5px solid rgba(216,30,30,0.3); }
+
+  .risk-bar-wrap {
+    height: 6px; background: var(--paper3); border-radius: 3px; overflow: hidden; margin-bottom: 12px;
+  }
+  .risk-bar-fill {
+    height: 100%; border-radius: 3px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0;
+  }
+
+  .risk-checks { display: flex; flex-direction: column; gap: 6px; }
+  .risk-check-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px;
+  }
+  .risk-check-icon { font-size: 13px; flex-shrink: 0; }
+  .risk-check-label { flex: 1; color: var(--ink2); }
+  .risk-check-val { font-size: 11px; font-weight: 500; }
+
+  /* AI verdict */
+  .ai-verdict {
+    background: var(--paper2);
+    border: 0.5px solid var(--border2);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+    padding: 14px; margin-bottom: 12px;
+  }
+  .ai-verdict-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .ai-verdict-icon { font-size: 14px; color: var(--gold); }
+  .ai-verdict-title { font-size: 11px; font-weight: 500; color: var(--ink); letter-spacing: 0.08em; }
+  .ai-verdict-badge {
+    margin-left: auto; font-size: 9px; padding: 2px 8px;
+    border-radius: 2px; letter-spacing: 0.08em;
+  }
+  .ai-verdict-text { font-size: 12px; color: var(--ink2); line-height: 1.7; }
+  .ai-verdict-text strong { color: var(--ink); font-weight: 500; }
+
+  /* Typing animation */
+  .typing-cursor::after {
+    content: '|'; animation: blink 0.8s infinite; color: var(--gold);
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* Signals grid */
+  .signals-section {
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 14px; margin-bottom: 12px;
+  }
+  .signals-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+  .signals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .signal-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px; border-radius: 2px;
+    font-size: 11px; border: 0.5px solid;
+  }
+  .signal-pill-icon { font-size: 12px; }
+  .signal-bull { background: rgba(29,158,117,0.06); border-color: rgba(29,158,117,0.2); color: #0F6E56; }
+  .signal-bear { background: rgba(216,90,48,0.06); border-color: rgba(216,90,48,0.2); color: #993C1D; }
+  .signal-neutral { background: rgba(184,146,58,0.06); border-color: rgba(184,146,58,0.2); color: #8a6020; }
+
+  /* External links */
+  .ext-links { display: flex; gap: 8px; margin-bottom: 12px; }
+  .ext-link {
+    flex: 1; padding: 10px 8px;
+    border: 0.5px solid var(--border2);
+    border-radius: 2px; cursor: pointer;
+    text-align: center; text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+    background: var(--paper);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .ext-link:hover { background: var(--paper2); border-color: var(--gold); }
+  .ext-link-icon { font-size: 15px; color: var(--ink3); }
+  .ext-link-label { font-size: 9px; letter-spacing: 0.1em; color: var(--ink3); text-transform: uppercase; }
+
+  /* Disclaimer */
+  .check-disclaimer {
+    font-size: 10px; color: var(--ink4); text-align: center;
+    line-height: 1.6; padding: 0 0 8px;
+  }
+
+  /* Error state */
+  .check-error {
+    padding: 1.5rem; text-align: center; display: none;
+  }
+  .check-error.active { display: block; }
+  .error-icon { font-size: 28px; margin-bottom: 8px; }
+  .error-text { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+  .error-retry {
+    margin-top: 12px; padding: 10px 20px;
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; cursor: pointer; font-size: 12px; color: var(--ink2);
+    transition: background 0.15s;
+  }
+  .error-retry:hover { background: var(--paper3); }
+
+  /* Pool info strip */
+  .pool-strip {
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 12px 14px; margin-bottom: 12px;
+  }
+  .pool-strip-title { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+  .pool-strip-row { display: flex; justify-content: space-between; align-items: center; }
+  .pool-pair { font-size: 12px; font-weight: 500; color: var(--ink); }
+  .pool-dex { font-size: 10px; color: var(--ink3); }
+  .pool-txns { font-size: 10px; color: var(--ink3); text-align: right; }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { animation: spin 0.8s linear infinite; display: inline-block; }
+
+  /* ════ JURNAL PAGE ════ */
+  #jurnal-page { z-index: 5; align-items: stretch; }
+  .jurnal-wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    height: 100dvh; overflow-y: auto;
+    padding: 0 0 80px; scrollbar-width: none;
+  }
+  .jurnal-wrap::-webkit-scrollbar { display: none; }
+
+  .jurnal-header {
+    padding: 1.5rem 1.5rem 1.2rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .jurnal-header-text { flex: 1; }
+  .jurnal-header-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 200; font-size: 17px; letter-spacing: 0.08em;
+  }
+  .jurnal-header-sub { font-size: 10px; color: var(--gold); letter-spacing: 0.25em; text-transform: uppercase; margin-top: 2px; }
+
+  /* Target Banner */
+  .target-banner {
+    margin: 1rem 1.5rem 0;
+    background: var(--paper2);
+    border: 0.5px solid var(--border2);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .target-banner:hover { background: var(--paper3); }
+  .target-banner-row { display: flex; align-items: center; justify-content: space-between; }
+  .target-banner-left { display: flex; align-items: center; gap: 8px; }
+  .target-banner-icon { font-size: 14px; color: var(--gold); }
+  .target-banner-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink3); margin-bottom: 2px; }
+  .target-banner-val { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .target-banner-edit { font-size: 10px; color: var(--ink4); letter-spacing: 0.1em; }
+
+  .target-progress-wrap { margin-top: 10px; }
+  .target-progress-bar-bg { height: 4px; background: var(--paper3); border-radius: 2px; overflow: hidden; }
+  .target-progress-bar-fill {
+    height: 100%; border-radius: 2px;
+    background: var(--gold);
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .target-progress-labels {
+    display: flex; justify-content: space-between;
+    margin-top: 5px;
+    font-size: 10px; color: var(--ink3);
+  }
+  .target-no-target {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--ink3);
+  }
+
+  /* Stat summary */
+  .jurnal-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 6px; padding: 1rem 1.5rem 0;
+  }
+  .jstat {
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 10px 10px 8px; text-align: center;
+  }
+  .jstat-lbl { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 4px; }
+  .jstat-val { font-size: 16px; font-weight: 500; line-height: 1; }
+
+  /* Add trade button */
+  .add-trade-btn {
+    display: flex; align-items: center; gap: 8px;
+    margin: 1rem 1.5rem 0;
+    padding: 13px 16px;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 2px;
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px; letter-spacing: 0.1em;
+    cursor: pointer; transition: background 0.15s;
+    width: calc(100% - 3rem);
+  }
+  .add-trade-btn:hover { background: var(--ink2); }
+  .add-trade-btn i { font-size: 16px; }
+
+  /* Trade feed */
+  .jurnal-feed-section { padding: 1rem 1.5rem 0; }
+  .jurnal-feed-empty {
+    text-align: center; padding: 2.5rem 1rem;
+    color: var(--ink4); font-size: 12px; line-height: 2;
+  }
+  .jurnal-feed-empty-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.4; }
+
+  .trade-card {
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; margin-bottom: 8px;
+    overflow: hidden; cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .trade-card:hover { background: var(--paper2); border-color: var(--gold); }
+  .trade-card-header {
+    display: grid; grid-template-columns: 1fr auto auto auto;
+    gap: 8px; align-items: center;
+    padding: 11px 14px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .trade-card-token { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .trade-card-date { font-size: 10px; color: var(--ink4); margin-top: 2px; }
+  .trade-card-pnl { font-size: 15px; font-weight: 500; }
+  .trade-card-body {
+    padding: 10px 14px 11px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .trade-card-detail { font-size: 11px; color: var(--ink3); line-height: 1.5; flex: 1; }
+  .trade-delete-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink4); font-size: 14px; padding: 4px;
+    border-radius: 2px; transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+  .trade-delete-btn:hover { color: var(--coral); background: rgba(216,90,48,0.08); }
+
+  /* ════ MODAL OVERLAY ════ */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(26,24,20,0.6);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal-sheet {
+    width: 100%; max-width: 420px;
+    background: var(--paper);
+    border-radius: 6px 6px 0 0;
+    border-top: 0.5px solid var(--border2);
+    padding: 0 0 env(safe-area-inset-bottom, 20px);
+    max-height: 90dvh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    scrollbar-width: none;
+  }
+  .modal-sheet::-webkit-scrollbar { display: none; }
+  .modal-overlay.open .modal-sheet { transform: translateY(0); }
+
+  .modal-handle {
+    width: 36px; height: 3px; border-radius: 2px;
+    background: var(--border2); margin: 12px auto 0;
+  }
+  .modal-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 300; font-size: 16px; letter-spacing: 0.1em;
+    padding: 16px 20px 12px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .modal-title span { color: var(--gold); }
+
+  .modal-body { padding: 16px 20px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block; font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink3); margin-bottom: 7px;
+  }
+  .form-input {
+    width: 100%; padding: 10px 12px;
+    background: var(--paper2); border: 1px solid var(--border2);
+    border-radius: 2px; font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 14px; color: var(--ink); outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--gold); }
+  .form-input::placeholder { color: var(--ink4); }
+  .form-input.error { border-color: var(--coral); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .mood-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .mood-option {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 8px 4px; border: 1px solid var(--border2);
+    border-radius: 2px; cursor: pointer; transition: all 0.15s;
+    background: var(--paper2);
+  }
+  .mood-option:hover { border-color: var(--gold); background: var(--paper3); }
+  .mood-option.selected { border-color: var(--gold); background: rgba(184,146,58,0.1); }
+  .mood-option-emoji { font-size: 18px; }
+  .mood-option-label { font-size: 9px; color: var(--ink3); letter-spacing: 0.05em; }
+
+  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .result-option {
+    padding: 10px 6px; border: 1px solid var(--border2);
+    border-radius: 2px; cursor: pointer; transition: all 0.15s;
+    background: var(--paper2); text-align: center;
+    font-size: 12px; font-weight: 500;
+  }
+  .result-option:hover { border-color: var(--gold); }
+  .result-option.sel-profit { border-color: var(--teal); background: rgba(29,158,117,0.1); color: #0F6E56; }
+  .result-option.sel-loss { border-color: var(--coral); background: rgba(216,90,48,0.1); color: #993C1D; }
+  .result-option.sel-even { border-color: var(--gold); background: rgba(184,146,58,0.1); color: #8a6020; }
+
+  .pnl-preview {
+    margin-top: 8px; padding: 10px 12px;
+    background: var(--paper2); border-radius: 2px;
+    font-size: 12px; color: var(--ink2); line-height: 1.6;
+    border: 0.5px solid var(--border);
+    display: none;
+  }
+  .pnl-preview.show { display: block; }
+  .pnl-preview strong { font-weight: 500; }
+
+  .modal-actions { display: flex; gap: 8px; padding: 0 20px 20px; }
+  .btn-save {
+    flex: 1; padding: 13px;
+    background: var(--ink); color: var(--paper);
+    border: none; border-radius: 2px;
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px; letter-spacing: 0.1em;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-save:hover { background: var(--ink2); }
+  .btn-cancel {
+    padding: 13px 16px;
+    background: var(--paper2); color: var(--ink2);
+    border: 0.5px solid var(--border2); border-radius: 2px;
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 13px; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-cancel:hover { background: var(--paper3); }
+
+  /* Target modal specifics */
+  .target-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .target-type-opt {
+    padding: 12px; border: 1px solid var(--border2);
+    border-radius: 2px; cursor: pointer; transition: all 0.15s;
+    background: var(--paper2); text-align: center;
+  }
+  .target-type-opt:hover { border-color: var(--gold); }
+  .target-type-opt.selected { border-color: var(--gold); background: rgba(184,146,58,0.1); }
+  .target-type-opt-icon { font-size: 18px; margin-bottom: 4px; }
+  .target-type-opt-label { font-size: 11px; color: var(--ink2); font-weight: 500; }
+  .target-type-opt-desc { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+
+  .tag-toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    z-index: 9000;
+    background: var(--ink); color: var(--paper);
+    padding: 10px 20px; border-radius: 2px;
+    font-size: 12px; letter-spacing: 0.08em;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none; white-space: nowrap;
+  }
+  .tag-toast.show { opacity: 1; }
+
+  /* ════ POLA PAGE ════ */
+  #pola-page { z-index: 5; align-items: stretch; }
+  .pola-wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    height: 100dvh; overflow-y: auto;
+    padding: 0 0 80px; scrollbar-width: none;
+  }
+  .pola-wrap::-webkit-scrollbar { display: none; }
+
+  .pola-header {
+    padding: 1.5rem 1.5rem 1.2rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .pola-header-text { flex: 1; }
+  .pola-header-title {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 200; font-size: 17px; letter-spacing: 0.08em;
+  }
+  .pola-header-sub { font-size: 10px; color: var(--gold); letter-spacing: 0.25em; text-transform: uppercase; margin-top: 2px; }
+
+  .pola-empty {
+    text-align: center; padding: 4rem 2rem;
+    color: var(--ink4); font-size: 13px; line-height: 2;
+  }
+  .pola-empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+
+  /* Chart containers */
+  .pola-section { padding: 1rem 1.5rem 0; }
+  .pola-chart-card {
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 14px; margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .pola-chart-title {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink3); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pola-chart-title i { color: var(--gold); }
+
+  /* Mini bar chart */
+  .mini-bars { display: flex; align-items: flex-end; gap: 4px; height: 60px; }
+  .mini-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+  .mini-bar {
+    width: 100%; border-radius: 2px 2px 0 0;
+    transition: height 0.6s cubic-bezier(0.4,0,0.2,1);
+    min-height: 3px;
+  }
+  .mini-bar.profit { background: var(--teal); }
+  .mini-bar.loss { background: var(--coral); }
+  .mini-bar.even { background: var(--gold); }
+  .mini-bar-label { font-size: 9px; color: var(--ink4); letter-spacing: 0.05em; }
+
+  /* Mood distribution */
+  .mood-dist { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mood-dist-item {
+    flex: 1; min-width: 0;
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 8px 6px; text-align: center;
+  }
+  .mood-dist-emoji { font-size: 16px; margin-bottom: 4px; }
+  .mood-dist-count { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .mood-dist-label { font-size: 9px; color: var(--ink3); margin-top: 2px; letter-spacing: 0.05em; }
+  .mood-dist-bar-bg { height: 3px; background: var(--paper3); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+  .mood-dist-bar-fill { height: 100%; border-radius: 2px; background: var(--gold); transition: width 0.8s; }
+
+  /* Mood vs Result matrix */
+  .mood-matrix { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; font-size: 10px; }
+  .mm-header { text-align: center; font-size: 9px; letter-spacing: 0.1em; color: var(--ink4); padding: 4px 0; }
+  .mm-cell {
+    padding: 8px 4px; border-radius: 2px; text-align: center;
+    background: var(--paper); border: 0.5px solid var(--border);
+  }
+  .mm-cell-val { font-size: 14px; font-weight: 500; }
+  .mm-cell-sub { font-size: 9px; color: var(--ink4); margin-top: 1px; }
+  .mm-cell.highlight-good { border-color: var(--teal); background: rgba(29,158,117,0.06); }
+  .mm-cell.highlight-bad { border-color: var(--coral); background: rgba(216,90,48,0.06); }
+
+  /* Best/Worst tokens */
+  .token-rank-list { display: flex; flex-direction: column; gap: 6px; }
+  .token-rank-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; background: var(--paper);
+    border: 0.5px solid var(--border); border-radius: 2px;
+  }
+  .token-rank-num { font-size: 11px; color: var(--ink4); min-width: 16px; }
+  .token-rank-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--ink); }
+  .token-rank-pnl { font-size: 13px; font-weight: 500; }
+  .token-rank-trades { font-size: 10px; color: var(--ink4); }
+
+  /* AI Narration block */
+  .ai-narration {
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-left: 2px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .ai-narration-header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .ai-narration-icon { font-size: 14px; color: var(--gold); }
+  .ai-narration-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink3); }
+  .ai-narration-badge {
+    margin-left: auto; font-size: 9px; padding: 2px 8px;
+    border-radius: 20px; letter-spacing: 0.1em;
+    background: rgba(184,146,58,0.1); color: var(--gold);
+  }
+  .ai-narration-text {
+    font-size: 12px; color: var(--ink2); line-height: 1.8;
+  }
+  .ai-narration-loading {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--ink3);
+  }
+
+  /* Tip cards */
+  .tip-cards { display: flex; flex-direction: column; gap: 6px; }
+  .tip-card {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px;
+    background: var(--paper2); border: 0.5px solid var(--border);
+    border-radius: 2px;
+  }
+  .tip-card-icon { font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+  .tip-card-text { font-size: 11px; color: var(--ink2); line-height: 1.6; }
+  .tip-card-text strong { color: var(--ink); font-weight: 500; }
+
+  /* ════ WEEKLY REVIEW PAGE ════ */
+  #review-page { z-index: 5; align-items: stretch; }
+  .review-wrap {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 420px;
+    height: 100dvh; overflow-y: auto;
+    padding: 0 0 80px; scrollbar-width: none;
+  }
+  .review-wrap::-webkit-scrollbar { display: none; }
+
+  .review-header {
+    padding: 1.5rem 1.5rem 1.2rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  /* Character card - MMORPG style */
+  .char-card {
+    margin: 1rem 1.5rem 0;
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; overflow: hidden; position: relative;
+  }
+  .char-card-bg {
+    position: absolute; inset: 0; opacity: 0.04;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--gold) 0px, var(--gold) 1px,
+      transparent 1px, transparent 8px
+    );
+  }
+  .char-card-inner {
+    position: relative; z-index: 1;
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px;
+  }
+
+  /* Anime character SVG area */
+  .char-avatar {
+    flex-shrink: 0; width: 80px; text-align: center;
+  }
+  .char-avatar svg { width: 80px; height: 96px; }
+  .char-rank-badge {
+    display: inline-block; margin-top: 6px;
+    font-size: 9px; letter-spacing: 0.15em;
+    padding: 2px 7px; border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .rank-s { background: rgba(184,146,58,0.15); color: var(--gold); border: 0.5px solid var(--gold); }
+  .rank-a { background: rgba(29,158,117,0.12); color: var(--teal); border: 0.5px solid var(--teal); }
+  .rank-b { background: rgba(90,80,60,0.12); color: var(--ink2); border: 0.5px solid var(--border2); }
+  .rank-c { background: rgba(216,90,48,0.1); color: var(--coral); border: 0.5px solid var(--coral); }
+
+  .char-info { flex: 1; }
+  .char-name {
+    font-family: 'Noto Serif JP', serif; font-weight: 300;
+    font-size: 15px; letter-spacing: 0.1em; color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .char-class { font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+
+  /* Stat bars MMORPG */
+  .char-stats { display: flex; flex-direction: column; gap: 6px; }
+  .char-stat-row { display: flex; align-items: center; gap: 8px; }
+  .char-stat-label { font-size: 9px; color: var(--ink3); letter-spacing: 0.1em; width: 58px; flex-shrink: 0; }
+  .char-stat-bar-bg { flex: 1; height: 5px; background: var(--paper3); border-radius: 3px; overflow: hidden; }
+  .char-stat-bar-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+  .stat-discipline { background: var(--teal); }
+  .stat-patience { background: var(--gold); }
+  .stat-risk { background: var(--coral); }
+  .stat-profit { background: linear-gradient(90deg, var(--teal), var(--gold)); }
+  .char-stat-val { font-size: 10px; font-weight: 500; width: 28px; text-align: right; color: var(--ink2); flex-shrink: 0; }
+
+  /* XP bar */
+  .char-xp-wrap { padding: 0 16px 14px; }
+  .char-xp-label {
+    display: flex; justify-content: space-between;
+    font-size: 9px; letter-spacing: 0.1em; color: var(--ink3);
+    margin-bottom: 5px;
+  }
+  .char-xp-bar-bg { height: 7px; background: var(--paper3); border-radius: 4px; overflow: hidden; }
+  .char-xp-bar-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+  }
+  .char-xp-bar-fill::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+    animation: xp-shimmer 2s ease-in-out infinite;
+  }
+  @keyframes xp-shimmer { 0%,100% { transform: translateX(-100%); } 50% { transform: translateX(100%); } }
+
+  /* Quest log */
+  .quest-log {
+    margin: 1rem 1.5rem 0;
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; overflow: hidden;
+  }
+  .quest-log-header {
+    padding: 10px 14px; border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quest-log-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink3); }
+  .quest-log-icon { font-size: 13px; color: var(--gold); }
+
+  .quest-item {
+    padding: 10px 14px; border-bottom: 0.5px solid var(--border);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .quest-item:last-child { border-bottom: none; }
+  .quest-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .quest-text { flex: 1; }
+  .quest-title { font-size: 11px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+  .quest-desc { font-size: 10px; color: var(--ink3); line-height: 1.5; }
+  .quest-reward { font-size: 10px; color: var(--gold); margin-top: 2px; }
+  .quest-status { font-size: 11px; flex-shrink: 0; margin-top: 2px; }
+
+  /* Skor disiplin */
+  .discipline-score-card {
+    margin: 1rem 1.5rem 0;
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 16px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .discipline-score-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .discipline-score-num {
+    font-family: 'Noto Serif JP', serif; font-weight: 200;
+    font-size: 56px; line-height: 1; color: var(--ink);
+    letter-spacing: -0.02em; margin: 8px 0;
+  }
+  .discipline-score-num .score-denom { font-size: 20px; color: var(--ink3); }
+  .discipline-score-label { font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink3); margin-bottom: 6px; }
+  .discipline-score-desc { font-size: 12px; color: var(--ink2); line-height: 1.6; }
+  .discipline-grade {
+    display: inline-block; font-size: 11px; letter-spacing: 0.2em;
+    padding: 3px 12px; border-radius: 20px; margin-top: 8px;
+    font-weight: 500;
+  }
+
+  /* AI Weekly review */
+  .review-ai-section {
+    margin: 1rem 1.5rem 0;
+    background: var(--paper); border: 0.5px solid var(--border2);
+    border-radius: 2px; overflow: hidden;
+  }
+  .review-ai-header {
+    padding: 10px 14px; border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .review-ai-title { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink3); flex: 1; }
+  .review-ai-body { padding: 14px; }
+  .review-ai-text { font-size: 12px; color: var(--ink2); line-height: 1.85; }
+
+  /* Weekly stats strip */
+  .weekly-stats-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 6px; margin: 1rem 1.5rem 0;
+  }
+  .wstat {
+    background: var(--paper2); border: 0.5px solid var(--border2);
+    border-radius: 2px; padding: 10px 8px; text-align: center;
+  }
+  .wstat-lbl { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 4px; }
+  .wstat-val { font-size: 15px; font-weight: 500; }
+
+  /* Refresh button */
+  .refresh-btn {
+    margin: 1rem 1.5rem 0;
+    width: calc(100% - 3rem);
+    padding: 11px;
+    background: var(--paper2); color: var(--ink2);
+    border: 0.5px solid var(--border2); border-radius: 2px;
+    font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+    font-size: 12px; letter-spacing: 0.1em;
+    cursor: pointer; transition: background 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .refresh-btn:hover { background: var(--paper3); }
+
+/* ==== BASE CHAIN UI UPGRADE ==== */
+body {
+  background: linear-gradient(180deg,#f7fbff 0%, #eef5ff 100%);
+}
+body.dungeon-sol {
+  background: linear-gradient(180deg,#f8f5ff 0%, #ede5ff 100%) !important;
+}
+
+.login-box,
+.action-card,
+.feed,
+.trade-card,
+.pola-chart-card,
+.char-card,
+.review-ai-section,
+.quest-log,
+.signals-section,
+.risk-section,
+.token-hero,
+.ai-verdict,
+.pool-strip {
+  border-radius: 18px !important;
+  box-shadow: 0 10px 35px rgba(79,140,255,0.08);
+}
+
+.icon-btn,
+.back-btn,
+.btn-clear,
+.nav-item,
+.login-btn,
+.btn-save,
+.btn-cancel,
+.btn-check,
+.add-trade-btn,
+.refresh-btn {
+  min-height: 44px;
+}
+
+.icon-btn,
+.back-btn,
+.btn-clear {
+  border-radius: 12px !important;
+}
+
+.action-card,
+.trade-card,
+.feed-row,
+.stat-card,
+.nav-item,
+.icon-btn,
+.back-btn,
+.btn-clear,
+.login-btn,
+.btn-save,
+.btn-cancel,
+.btn-check,
+.add-trade-btn {
+  transition: all .22s ease !important;
+}
+
+.action-card:hover,
+.trade-card:hover,
+.feed-row:hover,
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.bottom-nav {
+  border-radius: 24px 24px 0 0;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(18px);
+}
+
+#profile-floating-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 92px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,var(--gold),var(--gold2));
+  box-shadow: 0 12px 30px rgba(79,140,255,.32);
+  z-index: 1200;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:24px;
+  cursor:pointer;
+}
+
+#profile-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 168px;
+  width: 300px;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(79,140,255,.14);
+  border-radius: 24px;
+  padding: 18px;
+  z-index: 1300;
+  display:none;
+  box-shadow: 0 20px 50px rgba(20,50,100,.18);
+}
+
+#profile-panel.open {
+  display:block;
+  animation: fadePop .2s ease;
+}
+
+@keyframes fadePop {
+  from {
+    opacity:0;
+    transform: translateY(10px) scale(.98);
+  }
+  to {
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.profile-top {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.profile-avatar {
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  background: linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:22px;
+  font-weight:700;
+}
+
+.profile-name {
+  font-size:16px;
+  font-weight:700;
+  color:#10233f;
+}
+
+.profile-class {
+  font-size:11px;
+  letter-spacing:.16em;
+  color:#4f8cff;
+  margin-top:2px;
+}
+
+.mmorpg-stats {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.mmorpg-row {
+  display:grid;
+  grid-template-columns: 70px 1fr 38px;
+  align-items:center;
+  gap:8px;
+}
+
+.mmorpg-label {
+  font-size:10px;
+  letter-spacing:.12em;
+  color:#5f7ea3;
+}
+
+.mmorpg-bar {
+  height:8px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#dbe9ff;
+}
+
+.mmorpg-fill {
+  height:100%;
+  border-radius:999px;
+  background: linear-gradient(90deg,var(--gold),var(--gold2));
+}
+
+.mmorpg-value {
+  font-size:11px;
+  font-weight:600;
+  color:#345174;
+}
+
+.signout-fixed {
+  border-radius:14px !important;
+  padding:12px 16px !important;
+}
+
+
+
+.level-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(79,140,255,.1);
+  color:var(--gold);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.14em;
+}
+
+.level-progress-wrap {
+  margin-top:16px;
+}
+
+.level-progress-label {
+  display:flex;
+  justify-content:space-between;
+  font-size:10px;
+  color:#5f7ea3;
+  margin-bottom:6px;
+}
+
+.level-progress-bar {
+  height:10px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#dbe9ff;
+}
+
+.level-progress-fill {
+  height:100%;
+  width:42%;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));
+  box-shadow:0 0 18px rgba(79,140,255,.28);
+}
+
+.logout-hitbox {
+  position: relative;
+  min-width: 52px !important;
+  min-height: 52px !important;
+  border-radius: 16px !important;
+  z-index: 9999;
+  padding: 12px !important;
+}
+
+.logout-hitbox i,
+.logout-hitbox svg {
+  pointer-events:none;
+}
+
+/* ═══ PROFILE RANK SYSTEM ═══ */
+.profile-rank-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; letter-spacing: .14em;
+  margin-top: 4px;
+}
+.rank-newbie  { background: rgba(139,100,50,.12); color: #8b6432; border: 1px solid rgba(139,100,50,.25); }
+.rank-advanced{ background: rgba(100,150,80,.12); color: #4a7a30; border: 1px solid rgba(100,150,80,.3); }
+.rank-expert  { background: rgba(79,140,255,.12); color: #2c6fd6; border: 1px solid rgba(79,140,255,.3); }
+.rank-master  { background: rgba(180,50,200,.1);  color: #8a1fa0; border: 1px solid rgba(180,50,200,.25); }
+.rank-legend  { background: linear-gradient(90deg,rgba(255,180,0,.15),rgba(255,100,0,.15));
+                color: #c47000; border: 1px solid rgba(255,160,0,.35); }
+
+.profile-xp-section { margin: 10px 0 10px; }
+.profile-xp-labels {
+  display: flex; justify-content: space-between;
+  font-size: 10px; margin-bottom: 5px;
+}
+.profile-xp-bar-bg {
+  height: 8px; border-radius: 999px;
+  background: rgba(139,100,50,.12); overflow: hidden;
+}
+.profile-xp-bar-fill {
+  height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #b8923a, #d4aa50);
+  box-shadow: 0 0 10px rgba(184,146,58,.4);
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+.profile-rank-tiers {
+  display: flex; justify-content: space-between; gap: 4px;
+  margin-top: 10px; padding: 8px;
+  background: rgba(139,100,50,.06); border-radius: 10px;
+  border: 1px solid rgba(139,100,50,.12);
+}
+.rank-tier-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  flex: 1; opacity: .35; transition: opacity .2s;
+}
+.rank-tier-item.active { opacity: 1; }
+.rank-tier-item.achieved { opacity: .7; }
+.rank-tier-icon { font-size: 16px; }
+.rank-tier-name { font-size: 7px; letter-spacing: .08em; color: #8a6535; font-weight: 600; }
+
+/* ═══ DOWNLOAD BUTTON in jurnal header ═══ */
+.download-btn {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(184,146,58,.15), rgba(184,146,58,.08));
+  border: 1px solid rgba(184,146,58,.35);
+  border-radius: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #8a6020;
+  transition: all .2s ease;
+}
+.download-btn:hover { background: rgba(184,146,58,.25); color: #6b4a10; transform: scale(1.05); }
+
+/* ═══ DOWNLOAD FORMAT BUTTONS ═══ */
+.dl-format-btn {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 14px 16px;
+  background: var(--paper2); border: 1px solid var(--border2);
+  border-radius: 14px; cursor: pointer; text-align: left;
+  transition: all .2s ease;
+}
+.dl-format-btn:hover {
+  background: linear-gradient(135deg, rgba(251,243,230,.98), rgba(245,235,210,.9));
+  border-color: rgba(184,146,58,.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139,100,50,.1);
+}
+.dl-format-icon { font-size: 24px; flex-shrink: 0; }
+.dl-format-info { flex: 1; }
+.dl-format-name { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.dl-format-desc { font-size: 11px; color: var(--ink3); line-height: 1.4; }
+
+/* ═══ EXT LINKS — warm amber/brown ═══ */
+.ext-links {
+  display: flex; gap: 8px; margin-bottom: 12px;
+}
+.ext-link {
+  flex: 1; padding: 12px 8px;
+  border: 1.5px solid rgba(139,100,50,.28);
+  border-radius: 12px; cursor: pointer;
+  text-align: center; text-decoration: none;
+  background: linear-gradient(135deg, rgba(251,243,230,.95), rgba(245,235,210,.8));
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  transition: all .22s ease;
+  box-shadow: 0 2px 10px rgba(139,100,50,.08);
+}
+.ext-link:hover {
+  background: linear-gradient(135deg, rgba(255,248,230,1), rgba(250,235,195,1));
+  border-color: #b8923a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(139,100,50,.18);
+}
+.ext-link-icon { font-size: 18px; color: #8a6020; }
+.ext-link-label { font-size: 9px; letter-spacing: .08em; color: #7a5518; font-weight: 600; text-transform: uppercase; }
+
+</style>
+</head>
+<body>
+
+<canvas id="sakura-canvas"></canvas>
+
+<div id="page-turn">
+  <div class="turn-leaf" id="turn-leaf"></div>
+</div>
+
+<!-- ════ LOGIN PAGE ════ -->
+<div class="page active" id="login-page">
+  <div class="login-box">
+    <svg class="torii-svg" width="56" height="46" viewBox="0 0 56 46" fill="none">
+      <rect x="2" y="8" width="52" height="4" rx="2" fill="#b8923a" opacity="0.5"/>
+      <rect x="8" y="13" width="40" height="2.5" rx="1.25" fill="#b8923a" opacity="0.3"/>
+      <rect x="12" y="15.5" width="4" height="30.5" rx="2" fill="#1a1814" opacity="0.15"/>
+      <rect x="40" y="15.5" width="4" height="30.5" rx="2" fill="#1a1814" opacity="0.15"/>
+      <circle cx="28" cy="4.5" r="4" stroke="#b8923a" stroke-width="1" opacity="0.5" fill="none"/>
+      <circle cx="28" cy="4.5" r="1.5" fill="#b8923a" opacity="0.35"/>
+    </svg>
+
+    <h1 class="login-title">浮世の記録</h1>
+    <p class="login-kanji">KEDAI AFENG · TRADING JOURNAL</p>
+
+    <div class="divider-ornament"><span>✦ masuk ✦</span></div>
+
+    <div class="input-group">
+      <label class="input-label" for="tg-input">Username Telegram</label>
+      <div class="input-wrap">
+        <span class="input-prefix">@</span>
+        <input class="input-field" id="tg-input" type="text" placeholder="username kamu" autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+    </div>
+
+    <button class="login-btn" id="login-btn">Masuk ke Kedai ✦</button>
+
+    <p class="login-note">Tidak perlu password. Username hanya dipakai untuk personalisasi lokal.</p>
+
+    <div class="kedai-footer" style="margin-top:1.5rem; padding:0;">
+      <span>KEDAI AFENG</span> · Dual Dungeon Journal
+    </div>
+  </div>
+</div>
+
+<!-- ════ DUNGEON SELECT PAGE ════ -->
+<div class="page" id="dungeon-page">
+  <div class="dungeon-wrap">
+    <h2 class="dungeon-title">選べ · Choose Dungeon</h2>
+    <p class="dungeon-sub">Pilih jaringan trading kamu</p>
+    <p class="dungeon-label">⚔️ pilih dungeonmu</p>
+    <div class="dungeon-cards">
+
+      <!-- BASE DUNGEON -->
+      <div class="dungeon-card base-card" onclick="chooseDungeon('base')">
+        <div class="dungeon-card-glow"></div>
+        <span class="dungeon-card-icon">🔵</span>
+        <div class="dungeon-card-name base-name">Base</div>
+        <span class="dungeon-card-tag">L2 · EVM</span>
+        <div class="dungeon-card-desc">Coinbase L2<br>Gas murah</div>
+        <div class="dungeon-sources">
+          <span class="dungeon-source-pill">GeckoTerminal</span>
+        </div>
+      </div>
+
+      <!-- SOLANA DUNGEON -->
+      <div class="dungeon-card sol-card" onclick="chooseDungeon('sol')">
+        <div class="dungeon-card-glow"></div>
+        <span class="dungeon-card-icon">🟣</span>
+        <div class="dungeon-card-name sol-name">Solana</div>
+        <span class="dungeon-card-tag">SOL · SPL</span>
+        <div class="dungeon-card-desc">Cepat & murah<br>Meme central</div>
+        <div class="dungeon-sources">
+          <span class="dungeon-source-pill">GeckoTerminal</span>
+          <span class="dungeon-source-pill">Birdeye</span>
+          <span class="dungeon-source-pill">GMGN</span>
+        </div>
+      </div>
+
+    </div>
+    <div style="font-size:10px; color:var(--ink4); letter-spacing:0.15em;">
+      Data & journal tersimpan terpisah per dungeon
+    </div>
+  </div>
+</div>
+
+<!-- ════ HOME PAGE ════ -->
+<div class="page" id="home-page">
+  <div class="home-wrap" id="home-wrap">
+
+    <div class="home-header anim-1">
+      <div class="home-header-top">
+        <div class="user-greeting">Selamat datang, <strong id="display-name">trader</strong></div>
+        <div class="header-actions">
+          <div class="icon-btn" id="logout-btn" title="Keluar"><i class="ti ti-logout"></i></div>
+        </div>
+      </div>
+      <div class="home-title">浮世の記録</div>
+      <div class="home-title-sub" id="home-dungeon-label">Base Trading Journal</div>
+
+      <svg class="kamon-float" width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" stroke="#b8923a" stroke-width="0.8" fill="none"/>
+        <circle cx="40" cy="40" r="30" stroke="#b8923a" stroke-width="0.4" fill="none"/>
+        <polygon points="40,10 45,28 64,28 49,39 54,58 40,47 26,58 31,39 16,28 35,28" stroke="#b8923a" stroke-width="0.7" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="section anim-2">
+      <div class="section-label">minggu ini</div>
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-lbl">Survival</div>
+          <div class="stat-val c-good">74%</div>
+          <div class="stat-sub">winrate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">FOMO score</div>
+          <div class="stat-val c-neutral">4<span style="font-size:13px;">/10</span></div>
+          <div class="stat-sub">terkendali</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-lbl">Compound</div>
+          <div class="stat-val c-good">+34%</div>
+          <div class="stat-sub">dari $10</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section anim-3">
+      <div class="section-label">mulai</div>
+      <div class="action-grid">
+        <div class="action-card" onclick="handleAction('catat')">
+          <i class="ti ti-pencil action-card-icon"></i>
+          <div class="action-card-title">Catat trade</div>
+          <div class="action-card-desc">Log entry baru + cek emosi sebelum masuk</div>
+          <span class="action-card-corner">記録</span>
+        </div>
+        <div class="action-card" onclick="goToCheck()">
+          <i class="ti ti-shield-check action-card-icon"></i>
+          <div class="action-card-title">Pre-entry check</div>
+          <div class="action-card-desc">Paste CA, dapat risk score & analisis live</div>
+          <span class="action-card-corner">確認</span>
+        </div>
+        <div class="action-card" onclick="handleAction('pola')">
+          <i class="ti ti-chart-dots action-card-icon"></i>
+          <div class="action-card-title">Lihat pola</div>
+          <div class="action-card-desc">Insight dari riwayat trade & emosi</div>
+          <span class="action-card-corner">分析</span>
+        </div>
+        <div class="action-card" onclick="handleAction('review')">
+          <i class="ti ti-moon action-card-icon"></i>
+          <div class="action-card-title">Weekly review</div>
+          <div class="action-card-desc">Refleksi mingguan & skor disiplin</div>
+          <span class="action-card-corner">振返</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section anim-4">
+      <div class="section-label">trade terbaru</div>
+      <div class="feed">
+        <div class="feed-header">
+          <span class="feed-header-title">Log minggu ini</span>
+          <span class="feed-header-count">5 trade</span>
+        </div>
+        <div class="feed-row">
+          <div>
+            <div class="feed-token">$MIRAI</div>
+            <div class="feed-meta">2j lalu · scale out 60%</div>
+          </div>
+          <div class="feed-mood">😌</div>
+          <div class="feed-pnl c-good">+22%</div>
+          <div class="mood-chip chip-calm">tenang</div>
+        </div>
+        <div class="feed-row">
+          <div>
+            <div class="feed-token">$KAZE</div>
+            <div class="feed-meta">kemarin · entry candle vertikal</div>
+          </div>
+          <div class="feed-mood">😰</div>
+          <div class="feed-pnl c-bad">−8%</div>
+          <div class="mood-chip chip-fomo">fomo</div>
+        </div>
+        <div class="feed-row">
+          <div>
+            <div class="feed-token">$TSUKI</div>
+            <div class="feed-meta">2 hari lalu · retrace entry</div>
+          </div>
+          <div class="feed-mood">🙂</div>
+          <div class="feed-pnl c-good">+17%</div>
+          <div class="mood-chip chip-calm">tenang</div>
+        </div>
+        <div class="feed-row">
+          <div>
+            <div class="feed-token">$NAMI</div>
+            <div class="feed-meta">3 hari lalu · revenge trade</div>
+          </div>
+          <div class="feed-mood">😤</div>
+          <div class="feed-pnl c-bad">−11%</div>
+          <div class="mood-chip chip-fomo">emosional</div>
+        </div>
+        <div class="feed-row">
+          <div>
+            <div class="feed-token">$HOSHI</div>
+            <div class="feed-meta">4 hari lalu · breakout valid</div>
+          </div>
+          <div class="feed-mood">😎</div>
+          <div class="feed-pnl c-good">+28%</div>
+          <div class="mood-chip chip-ok">sabar</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section anim-5" style="padding-bottom: 1.2rem;">
+      <div class="insight-box">
+        <i class="ti ti-bulb insight-icon"></i>
+        <div class="insight-text">
+          <strong>Pola terdeteksi:</strong> kamu cenderung rugi saat entry di candle vertikal atau setelah loss berturut. Win rate saat mood <em>tenang</em>: <strong>82%</strong> — vs 31% saat FOMO.
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-divider">
+      <div class="scroll-divider-line"></div>
+      <span class="scroll-divider-glyph">✦ 武士道 ✦</span>
+      <div class="scroll-divider-line"></div>
+    </div>
+
+    <div class="dungeon-brand-footer">
+      <div class="dbf-title">
+        <span>KEDAI AFENG</span>
+        <span class="dbf-x">×</span>
+        <span class="dbf-dual">DUAL DUNGEON</span>
+      </div>
+      <div class="dbf-sub">Trading Journal · Multi-chain</div>
+      <div class="dbf-badges">
+        <span class="dbf-badge base">🔵 Base</span>
+        <span class="dbf-divider">⚔</span>
+        <span class="dbf-badge sol">🟣 Solana</span>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item active">
+      <i class="ti ti-home nav-icon"></i>
+      <span class="nav-label">Home</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" onclick="goToJurnal()">
+      <i class="ti ti-book nav-icon"></i>
+      <span class="nav-label">Jurnal</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" onclick="goToCheck()">
+      <i class="ti ti-shield-check nav-icon"></i>
+      <span class="nav-label">Check</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-users nav-icon"></i>
+      <span class="nav-label">Kedai</span>
+      <div class="nav-dot"></div>
+    </div>
+  </nav>
+</div>
+
+<!-- ════ PRE-ENTRY CHECK PAGE ════ -->
+<div class="page" id="check-page">
+  <div class="check-wrap">
+
+    <!-- Header -->
+    <div class="check-header">
+      <div class="back-btn" id="back-btn"><i class="ti ti-arrow-left"></i></div>
+      <div class="check-header-text">
+        <div class="check-header-title">確認 Pre-entry Check</div>
+        <div class="check-header-sub" id="check-source-label">GeckoTerminal · Claude AI · Base Network</div>
+      </div>
+    </div>
+
+    <!-- CA Input -->
+    <div class="ca-input-section">
+      <div class="ca-input-wrap">
+        <div class="ca-label-top">Contract Address (CA)</div>
+        <textarea class="ca-field" id="ca-input" rows="2"
+          placeholder="Paste CA token di sini...&#10;contoh: 0x4200000000000000000000000000000000000006"></textarea>
+      </div>
+      <div class="ca-actions">
+        <button class="btn-check" id="btn-check" onclick="runCheck()">
+          <i class="ti ti-shield-search"></i> Analisa Sekarang
+        </button>
+        <button class="btn-clear" onclick="clearCheck()" title="Clear">
+          <i class="ti ti-trash"></i>
+        </button>
+      </div>
+
+      <!-- Quick example tokens -->
+      <div style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;" id="ca-examples-wrap">
+        <span style="font-size:9px; color:var(--ink4); letter-spacing:0.1em; text-transform:uppercase; align-self:center;">contoh:</span>
+        <!-- filled by JS based on dungeon -->
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="check-loading" id="check-loading">
+      <svg class="loading-torii" width="44" height="36" viewBox="0 0 56 46" fill="none">
+        <rect x="2" y="8" width="52" height="4" rx="2" fill="#b8923a" opacity="0.6"/>
+        <rect x="8" y="13" width="40" height="2.5" rx="1.25" fill="#b8923a" opacity="0.3"/>
+        <rect x="12" y="15.5" width="4" height="30.5" rx="2" fill="#1a1814" opacity="0.2"/>
+        <rect x="40" y="15.5" width="4" height="30.5" rx="2" fill="#1a1814" opacity="0.2"/>
+        <circle cx="28" cy="4.5" r="4" stroke="#b8923a" stroke-width="1.2" opacity="0.7" fill="none"/>
+      </svg>
+      <div class="loading-text">Sedang menganalisa token...</div>
+      <div class="loading-steps">
+        <div class="loading-step" id="step-1">① Fetch data onchain</div>
+        <div class="loading-step" id="step-2">② Hitung risk score & market signals</div>
+        <div class="loading-step" id="step-3">③ AI verdict dari Claude</div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="check-error" id="check-error">
+      <div class="error-icon">⛩️</div>
+      <div class="error-text" id="error-msg">Token tidak ditemukan di GeckoTerminal Base network. Pastikan CA valid dan token sudah ada pool-nya di Base.</div>
+      <button class="error-retry" onclick="clearCheck()">← Coba lagi</button>
+    </div>
+
+    <!-- Result -->
+    <div class="check-result" id="check-result">
+
+      <!-- Token Hero -->
+      <div class="token-hero" id="res-hero">
+        <div class="token-hero-top">
+          <div class="token-name-block">
+            <div class="token-symbol" id="res-symbol">$TOKEN</div>
+            <div class="token-name" id="res-name">Token Name</div>
+          </div>
+          <span class="token-network-badge" id="res-network-badge">Base Network</span>
+        </div>
+        <div class="token-price-row">
+          <div class="token-price" id="res-price">$0.00</div>
+          <div class="token-price-change" id="res-change">+0%</div>
+        </div>
+        <div class="token-stats-grid">
+          <div class="token-stat-item">
+            <div class="token-stat-lbl">Market Cap</div>
+            <div class="token-stat-val" id="res-mcap">—</div>
+          </div>
+          <div class="token-stat-item">
+            <div class="token-stat-lbl">Vol 24j</div>
+            <div class="token-stat-val" id="res-vol">—</div>
+          </div>
+          <div class="token-stat-item">
+            <div class="token-stat-lbl">Likuiditas</div>
+            <div class="token-stat-val" id="res-liq">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pool info -->
+      <div class="pool-strip" id="res-pool">
+        <div class="pool-strip-title">Pool utama</div>
+        <div class="pool-strip-row">
+          <div>
+            <div class="pool-pair" id="res-pair">—</div>
+            <div class="pool-dex" id="res-dex">—</div>
+          </div>
+          <div class="pool-txns" id="res-txns">—</div>
+        </div>
+      </div>
+
+      <!-- Risk Score -->
+      <div class="risk-section">
+        <div class="risk-label-row">
+          <span class="risk-title">Risk Score</span>
+          <span class="risk-badge" id="res-risk-badge">—</span>
+        </div>
+        <div class="risk-bar-wrap">
+          <div class="risk-bar-fill" id="res-risk-bar"></div>
+        </div>
+        <div class="risk-checks" id="res-risk-checks"></div>
+      </div>
+
+      <!-- Signals -->
+      <div class="signals-section">
+        <div class="signals-title">Market Signals</div>
+        <div class="signals-grid" id="res-signals"></div>
+      </div>
+
+      <!-- AI Verdict -->
+      <div class="ai-verdict">
+        <div class="ai-verdict-header">
+          <i class="ti ti-robot ai-verdict-icon"></i>
+          <span class="ai-verdict-title">Claude AI · Verdict</span>
+          <span class="ai-verdict-badge chip-ok" id="res-verdict-tag">Analisa</span>
+        </div>
+        <div class="ai-verdict-text" id="res-verdict-text">
+          <span class="typing-cursor"></span>
+        </div>
+      </div>
+
+      <!-- External links -->
+      <div class="ext-links" id="ext-links-wrap">
+        <a class="ext-link" id="link-gecko" href="#" target="_blank" rel="noopener">
+          <i class="ti ti-chart-candle ext-link-icon"></i>
+          <span class="ext-link-label">GeckoTerminal</span>
+        </a>
+        <a class="ext-link" id="link-explorer" href="#" target="_blank" rel="noopener">
+          <i class="ti ti-cube ext-link-icon"></i>
+          <span class="ext-link-label" id="link-explorer-label">Basescan</span>
+        </a>
+        <a class="ext-link" id="link-birdeye" href="#" target="_blank" rel="noopener" style="display:none;">
+          <i class="ti ti-eye ext-link-icon"></i>
+          <span class="ext-link-label">Birdeye</span>
+        </a>
+      </div>
+
+      <!-- Data source info for Solana -->
+      <div id="sol-source-info" style="display:none; padding: 0 1.5rem; margin-bottom: 10px;">
+        <div style="font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink3); margin-bottom:6px;">Sumber data:</div>
+        <div class="source-badges">
+          <span class="source-badge gecko" id="src-gecko">GeckoTerminal</span>
+          <span class="source-badge birdeye" id="src-birdeye">Birdeye</span>
+          <span class="source-badge gmgn" id="src-gmgn">GMGN</span>
+          <span class="source-badge jupiter" id="src-jupiter">Jupiter</span>
+        </div>
+      </div>
+
+      <div class="check-disclaimer" id="check-disclaimer">
+        Data dari GeckoTerminal. Bukan saran finansial. DYOR selalu. 🙏
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bottom nav for check page -->
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="goToHome()">
+      <i class="ti ti-home nav-icon"></i>
+      <span class="nav-label">Home</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-book nav-icon"></i>
+      <span class="nav-label">Jurnal</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item active">
+      <i class="ti ti-shield-check nav-icon"></i>
+      <span class="nav-label">Check</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-users nav-icon"></i>
+      <span class="nav-label">Kedai</span>
+      <div class="nav-dot"></div>
+    </div>
+  </nav>
+</div>
+
+<!-- ════ JURNAL PAGE ════ -->
+<div class="page" id="jurnal-page">
+  <div class="jurnal-wrap">
+
+    <div class="jurnal-header">
+      <div class="back-btn" onclick="goToHome()"><i class="ti ti-arrow-left"></i></div>
+      <div class="jurnal-header-text">
+        <div class="jurnal-header-title">記録 Jurnal Trade</div>
+        <div class="jurnal-header-sub">Catat · Lacak · Berkembang</div>
+      </div>
+      <button class="download-btn" onclick="openDownloadModal()" title="Download Data">
+        <i class="ti ti-download"></i>
+      </button>
+    </div>
+
+    <!-- Target Banner -->
+    <div class="target-banner" id="target-banner" onclick="openTargetModal()">
+      <div class="target-banner-row">
+        <div class="target-banner-left">
+          <i class="ti ti-target target-banner-icon"></i>
+          <div>
+            <div class="target-banner-label" id="target-banner-label">Target Profit</div>
+            <div class="target-banner-val" id="target-banner-val">
+              <span class="target-no-target"><i class="ti ti-plus" style="font-size:12px;"></i> Atur target profit kamu</span>
+            </div>
+          </div>
+        </div>
+        <div class="target-banner-edit" id="target-banner-edit"></div>
+      </div>
+      <div class="target-progress-wrap" id="target-progress-wrap" style="display:none;">
+        <div class="target-progress-bar-bg">
+          <div class="target-progress-bar-fill" id="target-progress-fill" style="width:0%"></div>
+        </div>
+        <div class="target-progress-labels">
+          <span id="target-progress-pnl">+$0</span>
+          <span id="target-progress-pct">0%</span>
+          <span id="target-progress-goal"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="jurnal-stats" id="jurnal-stats">
+      <div class="jstat">
+        <div class="jstat-lbl">Trade</div>
+        <div class="jstat-val c-neutral" id="stat-total">0</div>
+      </div>
+      <div class="jstat">
+        <div class="jstat-lbl">Win%</div>
+        <div class="jstat-val c-good" id="stat-winrate">—</div>
+      </div>
+      <div class="jstat">
+        <div class="jstat-lbl">Total P&L</div>
+        <div class="jstat-val" id="stat-pnl">—</div>
+      </div>
+      <div class="jstat">
+        <div class="jstat-lbl">Avg</div>
+        <div class="jstat-val" id="stat-avg">—</div>
+      </div>
+    </div>
+
+    <!-- Add Trade -->
+    <button class="add-trade-btn" onclick="openTradeModal()">
+      <i class="ti ti-plus"></i> Catat Trade Baru
+    </button>
+
+    <!-- Trade Feed -->
+    <div class="jurnal-feed-section">
+      <div class="section-label" style="margin-top:1rem;">riwayat trade</div>
+      <div id="trade-feed">
+        <div class="jurnal-feed-empty" id="trade-empty">
+          <div class="jurnal-feed-empty-icon">📜</div>
+          Belum ada trade tercatat.<br>Mulai catat trade pertamamu!
+        </div>
+      </div>
+    </div>
+
+    <div class="kedai-footer" style="margin-top:1rem;">
+      <span>KEDAI AFENG</span> · Dual Dungeon Journal
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="goToHome()">
+      <i class="ti ti-home nav-icon"></i>
+      <span class="nav-label">Home</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item active">
+      <i class="ti ti-book nav-icon"></i>
+      <span class="nav-label">Jurnal</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" onclick="goToCheck()">
+      <i class="ti ti-shield-check nav-icon"></i>
+      <span class="nav-label">Check</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item">
+      <i class="ti ti-users nav-icon"></i>
+      <span class="nav-label">Kedai</span>
+      <div class="nav-dot"></div>
+    </div>
+  </nav>
+</div>
+
+<!-- ════ TRADE MODAL ════ -->
+<div class="modal-overlay" id="trade-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✦ Catat <span>Trade Baru</span></div>
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label class="form-label">Token / Symbol</label>
+        <input class="form-input" id="trade-token" type="text" placeholder="contoh: $MIRAI atau nama token" autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Modal (USD)</label>
+          <input class="form-input" id="trade-modal-amt" type="number" placeholder="10" min="0" step="0.01" oninput="updatePnlPreview()">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Hasil Trade</label>
+          <div class="result-grid" style="grid-template-columns:1fr 1fr 1fr;">
+            <div class="result-option" id="res-profit" onclick="selectResult('profit')">Profit</div>
+            <div class="result-option" id="res-loss" onclick="selectResult('loss')">Loss</div>
+            <div class="result-option" id="res-even" onclick="selectResult('even')">Even</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:14px;">
+        <label class="form-label">% PnL (opsional)</label>
+        <input class="form-input" id="trade-pnl-pct" type="number" placeholder="contoh: +22 atau -8" step="0.1" oninput="updatePnlPreview()">
+        <div class="pnl-preview" id="pnl-preview"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Mood saat entry</label>
+        <div class="mood-grid">
+          <div class="mood-option" onclick="selectMood('tenang','😌')" id="mood-tenang">
+            <span class="mood-option-emoji">😌</span>
+            <span class="mood-option-label">Tenang</span>
+          </div>
+          <div class="mood-option" onclick="selectMood('fomo','😰')" id="mood-fomo">
+            <span class="mood-option-emoji">😰</span>
+            <span class="mood-option-label">FOMO</span>
+          </div>
+          <div class="mood-option" onclick="selectMood('emosional','😤')" id="mood-emosional">
+            <span class="mood-option-emoji">😤</span>
+            <span class="mood-option-label">Emosi</span>
+          </div>
+          <div class="mood-option" onclick="selectMood('sabar','😎')" id="mood-sabar">
+            <span class="mood-option-emoji">😎</span>
+            <span class="mood-option-label">Sabar</span>
+          </div>
+          <div class="mood-option" onclick="selectMood('ragu','🤔')" id="mood-ragu">
+            <span class="mood-option-emoji">🤔</span>
+            <span class="mood-option-label">Ragu</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Alasan Entry / Catatan</label>
+        <textarea class="form-input" id="trade-notes" rows="3" placeholder="contoh: retrace entry, breakout valid, FOMO candle vertikal..."></textarea>
+      </div>
+
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeTradeModal()">Batal</button>
+      <button class="btn-save" onclick="saveTrade()"><i class="ti ti-check"></i> Simpan Trade</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ TARGET MODAL ════ -->
+<div class="modal-overlay" id="target-modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🎯 Atur <span>Target Profit</span></div>
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label class="form-label">Tipe target</label>
+        <div class="target-type-grid">
+          <div class="target-type-opt selected" id="ttype-harian" onclick="selectTargetType('harian')">
+            <div class="target-type-opt-icon">☀️</div>
+            <div class="target-type-opt-label">Harian</div>
+            <div class="target-type-opt-desc">Reset tiap hari</div>
+          </div>
+          <div class="target-type-opt" id="ttype-bebas" onclick="selectTargetType('bebas')">
+            <div class="target-type-opt-icon">🗺️</div>
+            <div class="target-type-opt-label">Bebas</div>
+            <div class="target-type-opt-desc">Sampai tercapai</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Target Profit (USD)</label>
+        <input class="form-input" id="target-amount" type="number" placeholder="contoh: 5 atau 20" min="0.01" step="0.01">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Modal Awal Hari Ini (USD) — opsional</label>
+        <input class="form-input" id="target-modal-amt" type="number" placeholder="untuk hitung persentase" min="0" step="0.01">
+      </div>
+
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeTargetModal()">Batal</button>
+      <button class="btn-save" onclick="saveTarget()">✦ Set Target</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ DOWNLOAD MODAL ════ -->
+<div class="modal-overlay" id="download-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📥 Download <span>Data Trade</span></div>
+    <div class="modal-body">
+
+      <div style="background:rgba(139,100,50,.07);border:1px solid rgba(139,100,50,.18);border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:11px;color:#7a5518;font-weight:600;margin-bottom:4px;">📊 Data yang akan didownload:</div>
+        <div style="font-size:12px;color:#8a6535;line-height:1.8;" id="dl-summary-text">
+          Memuat...
+        </div>
+      </div>
+
+      <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;">Pilih Format</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <button class="dl-format-btn" onclick="downloadCSV()">
+          <div class="dl-format-icon">📄</div>
+          <div class="dl-format-info">
+            <div class="dl-format-name">CSV — Spreadsheet Universal</div>
+            <div class="dl-format-desc">Buka di Excel, Google Sheets, Numbers. Format paling kompatibel.</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--ink4);font-size:16px;"></i>
+        </button>
+
+        <button class="dl-format-btn" onclick="downloadJSON()">
+          <div class="dl-format-icon">🗂️</div>
+          <div class="dl-format-info">
+            <div class="dl-format-name">JSON — Backup Lengkap</div>
+            <div class="dl-format-desc">Semua data mentah termasuk timestamp. Untuk backup atau import ulang.</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--ink4);font-size:16px;"></i>
+        </button>
+
+        <button class="dl-format-btn" onclick="downloadTXT()">
+          <div class="dl-format-icon">📝</div>
+          <div class="dl-format-info">
+            <div class="dl-format-name">TXT — Laporan Ringkas</div>
+            <div class="dl-format-desc">Summary mudah dibaca, bisa langsung di-share ke grup.</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--ink4);font-size:16px;"></i>
+        </button>
+
+      </div>
+
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDownloadModal()" style="width:100%;">Tutup</button>
+    </div>
+  </div>
+</div>
+<div class="page" id="pola-page">
+  <div class="pola-wrap" id="pola-wrap">
+    <div class="pola-header">
+      <div class="back-btn" onclick="goToHome()"><i class="ti ti-arrow-left"></i></div>
+      <div class="pola-header-text">
+        <div class="pola-header-title">分析 Lihat Pola</div>
+        <div class="pola-header-sub">Analisa · Teknikal · Emosi</div>
+      </div>
+    </div>
+    <div id="pola-content">
+      <div class="pola-empty" id="pola-empty">
+        <div class="pola-empty-icon">📊</div>
+        Belum ada trade untuk dianalisa.<br>Catat minimal 3 trade dulu ya!
+      </div>
+    </div>
+    <div class="kedai-footer" style="margin-top:1rem;"><span>KEDAI AFENG</span> · analisa pola trade</div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="goToHome()"><i class="ti ti-home nav-icon"></i><span class="nav-label">Home</span><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="goToJurnal()"><i class="ti ti-book nav-icon"></i><span class="nav-label">Jurnal</span><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="goToCheck()"><i class="ti ti-shield-check nav-icon"></i><span class="nav-label">Check</span><div class="nav-dot"></div></div>
+    <div class="nav-item active"><i class="ti ti-chart-dots nav-icon"></i><span class="nav-label">Pola</span><div class="nav-dot"></div></div>
+  </nav>
+</div>
+
+<!-- ════ WEEKLY REVIEW PAGE ════ -->
+<div class="page" id="review-page">
+  <div class="review-wrap" id="review-wrap">
+    <div class="review-header">
+      <div class="back-btn" onclick="goToHome()"><i class="ti ti-arrow-left"></i></div>
+      <div class="pola-header-text">
+        <div class="pola-header-title">振返 Weekly Review</div>
+        <div class="pola-header-sub">Refleksi · Disiplin · Karakter</div>
+      </div>
+    </div>
+    <div id="review-content">
+      <div class="pola-empty">
+        <div class="pola-empty-icon">🌙</div>
+        Belum ada trade minggu ini.<br>Catat trade dulu untuk melihat review!
+      </div>
+    </div>
+    <div class="kedai-footer" style="margin-top:1rem;"><span>KEDAI AFENG</span> · refleksi mingguan</div>
+  </div>
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="goToHome()"><i class="ti ti-home nav-icon"></i><span class="nav-label">Home</span><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="goToJurnal()"><i class="ti ti-book nav-icon"></i><span class="nav-label">Jurnal</span><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="goToCheck()"><i class="ti ti-shield-check nav-icon"></i><span class="nav-label">Check</span><div class="nav-dot"></div></div>
+    <div class="nav-item active"><i class="ti ti-moon nav-icon"></i><span class="nav-label">Review</span><div class="nav-dot"></div></div>
+  </nav>
+</div>
+
+<!-- Toast -->
+<div class="tag-toast" id="tag-toast"></div>
+
+<script>
+/* ── SAKURA ── */
+const canvas = document.getElementById('sakura-canvas');
+const ctx = canvas.getContext('2d');
+let petals = [], W, H;
+
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+function randomPetal() {
+  return { x: Math.random()*W, y:-20, size:Math.random()*6+4,
+    speedY:Math.random()*1.2+0.6, speedX:Math.random()*0.8-0.4,
+    angle:Math.random()*Math.PI*2, spin:(Math.random()-0.5)*0.04,
+    opacity:Math.random()*0.5+0.25, sway:Math.random()*0.8+0.3,
+    swayOffset:Math.random()*Math.PI*2, t:0 };
+}
+
+function drawPetal(p) {
+  ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.angle);
+  ctx.globalAlpha = p.opacity; ctx.fillStyle = '#d4a0b0';
+  ctx.beginPath(); ctx.ellipse(0,0,p.size*0.55,p.size,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha = p.opacity*0.4; ctx.fillStyle = '#f0c8d4';
+  ctx.beginPath(); ctx.ellipse(0,-p.size*0.3,p.size*0.25,p.size*0.5,0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+let frame = 0;
+function animSakura() {
+  ctx.clearRect(0,0,W,H); frame++;
+  if (frame%18===0 && petals.length<28) petals.push(randomPetal());
+  petals = petals.filter(p => p.y < H+30);
+  petals.forEach(p => {
+    p.t+=0.02; p.x += p.speedX + Math.sin(p.t*p.sway+p.swayOffset)*0.5;
+    p.y += p.speedY; p.angle += p.spin; drawPetal(p);
+  });
+  requestAnimationFrame(animSakura);
+}
+animSakura();
+
+/* ── PAGE TURN ── */
+function pageTurn(callback) {
+  const leaf = document.getElementById('turn-leaf');
+  leaf.style.transition = 'none';
+  leaf.style.transform = 'rotateY(0deg)';
+  leaf.style.opacity = '1';
+  leaf.style.right = '0'; leaf.style.left = 'auto';
+  leaf.style.width = '50%'; leaf.style.transformOrigin = 'left center';
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      leaf.style.transition = 'transform 0.45s cubic-bezier(0.4,0,0.2,1)';
+      leaf.style.transform = 'rotateY(-90deg)';
+      setTimeout(() => {
+        callback();
+        leaf.style.transition = 'none';
+        leaf.style.transform = 'rotateY(90deg)';
+        leaf.style.transformOrigin = 'right center';
+        leaf.style.left = '0'; leaf.style.right = 'auto';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            leaf.style.transition = 'transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.15s 0.35s';
+            leaf.style.transform = 'rotateY(0deg)';
+            leaf.style.opacity = '0';
+            setTimeout(() => { leaf.style.opacity='0'; leaf.style.left='auto'; leaf.style.right='0'; }, 600);
+          });
+        });
+      }, 460);
+    });
+  });
+}
+
+/* ── STATE ── */
+let currentUser = localStorage.getItem('kedai_afeng_user') || '';
+let currentDungeon = localStorage.getItem('kedai_afeng_dungeon') || null;
+
+// Restore theme jika dungeon sudah tersimpan
+if (currentDungeon === 'sol') {
+  document.body.classList.add('dungeon-sol');
+} else {
+  document.body.classList.remove('dungeon-sol');
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ── LOGIN ── */
+document.getElementById('login-btn').addEventListener('click', doLogin);
+document.getElementById('tg-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// Auto-restore session jika sudah pernah login
+(function autoRestoreSession() {
+  if (currentUser && currentDungeon) {
+    // Update labels
+    const dungeonLabel = currentDungeon === 'sol' ? '🟣 Solana Trading Journal' : '🔵 Base Trading Journal';
+    const homeLbl = document.getElementById('home-dungeon-label');
+    if (homeLbl) homeLbl.textContent = dungeonLabel;
+    document.getElementById('display-name').textContent = '@' + currentUser;
+    updateHomeStats();
+    if (window._refreshProfilePanel) window._refreshProfilePanel();
+    showPage('home-page');
+  }
+})();
+
+function doLogin() {
+  const val = document.getElementById('tg-input').value.trim();
+  if (!val) {
+    document.getElementById('tg-input').style.borderColor = '#D85A30';
+    setTimeout(() => document.getElementById('tg-input').style.borderColor='', 1200);
+    return;
+  }
+  currentUser = val.replace('@','');
+  localStorage.setItem('kedai_afeng_user', currentUser);
+  pageTurn(() => {
+    showPage('dungeon-page');
+  });
+}
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  // Hanya reset state in-memory, TIDAK hapus data trades dari localStorage
+  pageTurn(() => {
+    currentDungeon = null;
+    currentUser = '';
+    document.body.className = '';
+    showPage('login-page');
+    document.getElementById('tg-input').value='';
+  });
+});
+
+/* ── DUNGEON ── */
+function chooseDungeon(dungeon) {
+  currentDungeon = dungeon;
+  localStorage.setItem('kedai_afeng_dungeon', dungeon);
+  // Pastikan currentUser selalu sinkron dengan localStorage
+  if (!currentUser) currentUser = localStorage.getItem('kedai_afeng_user') || 'guest';
+
+  // Apply theme
+  if (dungeon === 'sol') {
+    document.body.classList.add('dungeon-sol');
+  } else {
+    document.body.classList.remove('dungeon-sol');
+  }
+
+  // Update dynamic labels
+  const dungeonLabel = dungeon === 'sol' ? '🟣 Solana Trading Journal' : '🔵 Base Trading Journal';
+  const homeLbl = document.getElementById('home-dungeon-label');
+  if (homeLbl) homeLbl.textContent = dungeonLabel;
+
+  // Update profile class label in profile panel
+  const classLabel = document.getElementById('profile-class-label');
+  if (classLabel) classLabel.textContent = (dungeon === 'sol' ? 'SOL' : 'BASE') + ' TRENCHER · LVL ' + '3';
+
+  // Update check page sources display
+  const checkSrcLbl = document.getElementById('check-source-label');
+  if (checkSrcLbl) {
+    checkSrcLbl.textContent = dungeon === 'sol'
+      ? 'GeckoTerminal · Birdeye · GMGN · Claude AI'
+      : 'GeckoTerminal · Claude AI · Base Network';
+  }
+
+  // Update CA placeholder
+  const caInput = document.getElementById('ca-input');
+  if (caInput) {
+    caInput.placeholder = dungeon === 'sol'
+      ? 'Paste CA token Solana di sini...\ncontoh: So11111111111111111111111111111111111111112'
+      : 'Paste CA token di sini...\ncontoh: 0x4200000000000000000000000000000000000006';
+  }
+
+  // Update example tokens
+  const exWrap = document.getElementById('ca-examples-wrap');
+  if (exWrap) {
+    if (dungeon === 'sol') {
+      exWrap.innerHTML = `
+        <span style="font-size:9px; color:var(--ink4); letter-spacing:0.1em; text-transform:uppercase; align-self:center;">contoh:</span>
+        <button class="mood-chip chip-ok" style="cursor:pointer; border:none;" onclick="fillExample('So11111111111111111111111111111111111111112')">SOL</button>
+        <button class="mood-chip chip-calm" style="cursor:pointer; border:none;" onclick="fillExample('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v')">USDC</button>
+        <button class="mood-chip chip-fomo" style="cursor:pointer; border:none;" onclick="fillExample('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263')">BONK</button>
+      `;
+    } else {
+      exWrap.innerHTML = `
+        <span style="font-size:9px; color:var(--ink4); letter-spacing:0.1em; text-transform:uppercase; align-self:center;">contoh:</span>
+        <button class="mood-chip chip-ok" style="cursor:pointer; border:none;" onclick="fillExample('0x4200000000000000000000000000000000000006')">WETH</button>
+        <button class="mood-chip chip-calm" style="cursor:pointer; border:none;" onclick="fillExample('0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913')">USDC</button>
+        <button class="mood-chip chip-fomo" style="cursor:pointer; border:none;" onclick="fillExample('0x0578d8A44db98B23BF096A382e016e29a5Ce0ffe')">HIGHER</button>
+      `;
+    }
+  }
+
+  // Network badge & explorer link labels
+  const netBadge = document.getElementById('res-network-badge');
+  if (netBadge) netBadge.textContent = dungeon === 'sol' ? 'Solana Network' : 'Base Network';
+
+  // Sol source info visibility (shown after check)
+  const solSrcInfo = document.getElementById('sol-source-info');
+  if (solSrcInfo) solSrcInfo.style.display = dungeon === 'sol' ? '' : 'none';
+
+  const linkBirdeye = document.getElementById('link-birdeye');
+  if (linkBirdeye) linkBirdeye.style.display = dungeon === 'sol' ? '' : 'none';
+
+  const explorerLbl = document.getElementById('link-explorer-label');
+  if (explorerLbl) explorerLbl.textContent = dungeon === 'sol' ? 'Solscan' : 'Basescan';
+
+  pageTurn(() => {
+    document.getElementById('display-name').textContent = '@' + currentUser;
+    showPage('home-page');
+    document.querySelectorAll('.anim-1,.anim-2,.anim-3,.anim-4,.anim-5').forEach(el => {
+      el.style.animation='none'; el.offsetHeight; el.style.animation='';
+    });
+    updateHomeStats();
+    if (window._refreshProfilePanel) window._refreshProfilePanel();
+  });
+}
+
+/* ── NAVIGATION ── */
+function goToCheck() {
+  pageTurn(() => {
+    showPage('check-page');
+    clearCheck();
+  });
+}
+
+function goToHome() {
+  pageTurn(() => { showPage('home-page'); });
+}
+
+document.getElementById('back-btn').addEventListener('click', goToHome);
+
+function goToJurnal() {
+  pageTurn(() => {
+    showPage('jurnal-page');
+    renderJurnal();
+  });
+}
+
+function handleAction(type) {
+  if (type === 'check') { goToCheck(); return; }
+  if (type === 'catat') { goToJurnal(); return; }
+  if (type === 'pola') { goToPola(); return; }
+  if (type === 'review') { goToReview(); return; }
+}
+
+function goToPola() {
+  pageTurn(() => { showPage('pola-page'); renderPola(); });
+}
+
+function goToReview() {
+  pageTurn(() => { showPage('review-page'); renderWeeklyReview(); });
+}
+
+/* ═══════════════════════════════
+   JURNAL DATA (localStorage)
+═══════════════════════════════ */
+function getKey(suffix) {
+  const u = currentUser || localStorage.getItem('kedai_afeng_user') || 'guest';
+  const d = currentDungeon || localStorage.getItem('kedai_afeng_dungeon') || 'base';
+  return 'kedai_' + u + '_' + d + '_' + suffix;
+}
+
+function getTrades() {
+  try { return JSON.parse(localStorage.getItem(getKey('trades')) || '[]'); } catch { return []; }
+}
+function saveTrades(arr) { localStorage.setItem(getKey('trades'), JSON.stringify(arr)); }
+
+function getTarget() {
+  try { return JSON.parse(localStorage.getItem(getKey('target')) || 'null'); } catch { return null; }
+}
+function saveTargetData(obj) { localStorage.setItem(getKey('target'), JSON.stringify(obj)); }
+
+/* ═══════════════════════════════
+   TRADE MODAL STATE
+═══════════════════════════════ */
+let selectedMood = null;
+let selectedResult = null;
+let selectedTargetType = 'harian';
+
+function openTradeModal() {
+  // reset form
+  document.getElementById('trade-token').value = '';
+  document.getElementById('trade-modal-amt').value = '';
+  document.getElementById('trade-pnl-pct').value = '';
+  document.getElementById('trade-notes').value = '';
+  document.getElementById('pnl-preview').classList.remove('show');
+  selectedMood = null; selectedResult = null;
+  document.querySelectorAll('.mood-option').forEach(e => e.classList.remove('selected'));
+  ['res-profit','res-loss','res-even'].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = 'result-option';
+  });
+  document.getElementById('trade-modal').classList.add('open');
+}
+function closeTradeModal() { document.getElementById('trade-modal').classList.remove('open'); }
+
+function selectMood(mood, emoji) {
+  selectedMood = { mood, emoji };
+  document.querySelectorAll('.mood-option').forEach(e => e.classList.remove('selected'));
+  document.getElementById('mood-' + mood).classList.add('selected');
+}
+
+function selectResult(r) {
+  selectedResult = r;
+  ['res-profit','res-loss','res-even'].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = 'result-option';
+  });
+  const map = { profit: 'sel-profit', loss: 'sel-loss', even: 'sel-even' };
+  document.getElementById('res-' + r).classList.add(map[r]);
+  updatePnlPreview();
+}
+
+function updatePnlPreview() {
+  const pct = parseFloat(document.getElementById('trade-pnl-pct').value);
+  const modal = parseFloat(document.getElementById('trade-modal-amt').value);
+  const preview = document.getElementById('pnl-preview');
+  if (!isNaN(pct) && !isNaN(modal) && modal > 0) {
+    const usd = (modal * pct / 100).toFixed(2);
+    const sign = pct >= 0 ? '+' : '';
+    preview.innerHTML = `Estimasi PnL: <strong>${sign}$${usd}</strong> dari modal $${modal}`;
+    preview.classList.add('show');
+  } else {
+    preview.classList.remove('show');
+  }
+}
+
+function saveTrade() {
+  const token = document.getElementById('trade-token').value.trim().toUpperCase();
+  const modalAmt = parseFloat(document.getElementById('trade-modal-amt').value);
+  const pnlPct = parseFloat(document.getElementById('trade-pnl-pct').value);
+  const notes = document.getElementById('trade-notes').value.trim();
+
+  if (!token) {
+    document.getElementById('trade-token').classList.add('error');
+    setTimeout(() => document.getElementById('trade-token').classList.remove('error'), 1200);
+    return;
+  }
+  if (!selectedResult) {
+    showToast('Pilih hasil trade dulu (Profit / Loss / Even)');
+    return;
+  }
+
+  const pnlUsd = (!isNaN(pnlPct) && !isNaN(modalAmt) && modalAmt > 0)
+    ? parseFloat((modalAmt * pnlPct / 100).toFixed(2)) : null;
+
+  const trade = {
+    id: Date.now(),
+    token: token.startsWith('$') ? token : '$' + token,
+    modal: isNaN(modalAmt) ? null : modalAmt,
+    result: selectedResult,
+    pnlPct: isNaN(pnlPct) ? null : pnlPct,
+    pnlUsd,
+    mood: selectedMood,
+    notes,
+    ts: Date.now()
+  };
+
+  const trades = getTrades();
+  trades.unshift(trade);
+  saveTrades(trades);
+  closeTradeModal();
+  renderJurnal();
+  updateHomeStats();
+  if (window._refreshProfilePanel) window._refreshProfilePanel();
+  showToast('✦ Trade ' + trade.token + ' tercatat');
+}
+
+/* ═══════════════════════════════
+   TARGET MODAL
+═══════════════════════════════ */
+function openTargetModal() {
+  const t = getTarget();
+  selectedTargetType = t ? t.type : 'harian';
+  document.getElementById('target-amount').value = t ? t.amount : '';
+  document.getElementById('target-modal-amt').value = t ? (t.modalAwal || '') : '';
+  selectTargetType(selectedTargetType);
+  document.getElementById('target-modal-overlay').classList.add('open');
+}
+function closeTargetModal() { document.getElementById('target-modal-overlay').classList.remove('open'); }
+
+function selectTargetType(type) {
+  selectedTargetType = type;
+  ['harian','bebas'].forEach(t => {
+    document.getElementById('ttype-' + t).classList.toggle('selected', t === type);
+  });
+}
+
+function saveTarget() {
+  const amount = parseFloat(document.getElementById('target-amount').value);
+  const modalAwal = parseFloat(document.getElementById('target-modal-amt').value);
+  if (isNaN(amount) || amount <= 0) {
+    document.getElementById('target-amount').classList.add('error');
+    setTimeout(() => document.getElementById('target-amount').classList.remove('error'), 1200);
+    return;
+  }
+  const target = {
+    type: selectedTargetType,
+    amount,
+    modalAwal: isNaN(modalAwal) ? null : modalAwal,
+    setAt: Date.now(),
+    setDate: new Date().toDateString()
+  };
+  saveTargetData(target);
+  closeTargetModal();
+  renderJurnal();
+  showToast('🎯 Target $' + amount + ' tersimpan');
+}
+
+/* ═══════════════════════════════
+   DOWNLOAD DATA
+═══════════════════════════════ */
+function openDownloadModal() {
+  const trades = getTrades();
+  const summaryEl = document.getElementById('dl-summary-text');
+  if (summaryEl) {
+    const wins = trades.filter(t=>t.result==='profit').length;
+    const wr = trades.length > 0 ? Math.round(wins/trades.length*100) : 0;
+    const totalPnl = trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+    const sign = totalPnl >= 0 ? '+' : '';
+    summaryEl.innerHTML = `
+      📊 <strong>${trades.length} trade</strong> tercatat<br>
+      ✅ Win rate: <strong>${wr}%</strong> (${wins} profit / ${trades.length-wins} loss)<br>
+      💰 Total P&L: <strong>${sign}$${Math.abs(totalPnl).toFixed(2)}</strong><br>
+      👤 Akun: <strong>@${currentUser||'trader'}</strong>
+    `;
+  }
+  document.getElementById('download-modal').classList.add('open');
+}
+
+function closeDownloadModal() {
+  document.getElementById('download-modal').classList.remove('open');
+}
+
+function downloadCSV() {
+  const trades = getTrades();
+  if (!trades.length) { showToast('Belum ada trade untuk didownload'); return; }
+
+  const header = ['No','Tanggal','Token','Modal ($)','Hasil','PnL (%)','PnL ($)','Mood','Catatan'];
+  const rows = trades.map((t, i) => {
+    const date = new Date(t.ts).toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const mood = t.mood ? t.mood.mood : '';
+    const notes = t.notes ? '"' + t.notes.replace(/"/g,'""') + '"' : '';
+    return [
+      i+1,
+      date,
+      t.token,
+      t.modal !== null ? t.modal : '',
+      t.result,
+      t.pnlPct !== null ? (t.pnlPct > 0 ? '+' : '') + t.pnlPct.toFixed(1) + '%' : '',
+      t.pnlUsd !== null ? (t.pnlUsd >= 0 ? '+' : '') + t.pnlUsd.toFixed(2) : '',
+      mood,
+      notes
+    ].join(',');
+  });
+
+  // Add summary footer
+  const wins = trades.filter(t=>t.result==='profit').length;
+  const wr = Math.round(wins/trades.length*100);
+  const totalPnl = trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+  rows.push('');
+  rows.push(`"SUMMARY","","","","","","","",""`);
+  rows.push(`"Total Trade",${trades.length},"","","","","","",""`);
+  rows.push(`"Win Rate",${wr}%,"","","","","","",""`);
+  rows.push(`"Total P&L","${(totalPnl>=0?'+':'')}$${Math.abs(totalPnl).toFixed(2)}","","","","","","",""`);
+  rows.push(`"Diekspor","${new Date().toLocaleDateString('id-ID')}","","","","","","",""`);
+
+  const csvContent = '\uFEFF' + [header.join(','), ...rows].join('\n'); // BOM for Excel UTF-8
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  triggerDownload(blob, `kedai-afeng-trade-${currentUser||'trader'}-${new Date().toISOString().slice(0,10)}.csv`);
+  showToast('✅ CSV didownload!');
+  closeDownloadModal();
+}
+
+function downloadJSON() {
+  const trades = getTrades();
+  if (!trades.length) { showToast('Belum ada trade untuk didownload'); return; }
+
+  const wins = trades.filter(t=>t.result==='profit').length;
+  const totalPnl = trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+  const exportData = {
+    meta: {
+      app: 'Kedai Afeng — Base Trading Journal',
+      user: '@' + (currentUser||'trader'),
+      exportDate: new Date().toISOString(),
+      totalTrades: trades.length,
+      winRate: Math.round(wins/trades.length*100) + '%',
+      totalPnl: (totalPnl>=0?'+':'') + '$' + Math.abs(totalPnl).toFixed(2)
+    },
+    trades: trades.map(t => ({
+      ...t,
+      dateHuman: new Date(t.ts).toLocaleDateString('id-ID', { weekday:'long', day:'2-digit', month:'long', year:'numeric' })
+    }))
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  triggerDownload(blob, `kedai-afeng-backup-${currentUser||'trader'}-${new Date().toISOString().slice(0,10)}.json`);
+  showToast('✅ JSON didownload!');
+  closeDownloadModal();
+}
+
+function downloadTXT() {
+  const trades = getTrades();
+  if (!trades.length) { showToast('Belum ada trade untuk didownload'); return; }
+
+  const wins = trades.filter(t=>t.result==='profit').length;
+  const losses = trades.filter(t=>t.result==='loss').length;
+  const wr = Math.round(wins/trades.length*100);
+  const totalPnl = trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+  const avgPnlPct = trades.filter(t=>t.pnlPct!==null).length > 0
+    ? trades.filter(t=>t.pnlPct!==null).reduce((s,t)=>s+t.pnlPct,0)/trades.filter(t=>t.pnlPct!==null).length : 0;
+
+  const badMoods = trades.filter(t=>t.mood&&(t.mood.mood==='fomo'||t.mood.mood==='emosional')).length;
+
+  let txt = '';
+  txt += '═══════════════════════════════\n';
+  txt += '  KEDAI AFENG — Laporan Trade\n';
+  txt += '═══════════════════════════════\n';
+  txt += `👤 Trader  : @${currentUser||'trader'}\n`;
+  txt += `📅 Tanggal : ${new Date().toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' })}\n`;
+  txt += '\n── RINGKASAN ──\n';
+  txt += `📊 Total Trade  : ${trades.length}\n`;
+  txt += `✅ Profit       : ${wins}\n`;
+  txt += `❌ Loss         : ${losses}\n`;
+  txt += `🎯 Win Rate     : ${wr}%\n`;
+  txt += `💰 Total P&L    : ${(totalPnl>=0?'+':'')}$${Math.abs(totalPnl).toFixed(2)}\n`;
+  txt += `📈 Avg PnL/Trade: ${(avgPnlPct>=0?'+':'')}${avgPnlPct.toFixed(1)}%\n`;
+  txt += `😰 Entry Bad Mood: ${badMoods} kali\n`;
+  txt += '\n── RIWAYAT TRADE ──\n';
+
+  trades.forEach((t, i) => {
+    const date = new Date(t.ts).toLocaleDateString('id-ID', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const pnlStr = t.pnlPct !== null ? ` | ${(t.pnlPct>=0?'+':'')}${t.pnlPct.toFixed(1)}%` : '';
+    const usdStr = t.pnlUsd !== null ? ` (${(t.pnlUsd>=0?'+':'')}$${Math.abs(t.pnlUsd).toFixed(2)})` : '';
+    const moodStr = t.mood ? ` ${t.mood.emoji}${t.mood.mood}` : '';
+    const res = t.result === 'profit' ? '✅' : t.result === 'loss' ? '❌' : '➖';
+    txt += `${i+1}. ${date} | ${t.token} | ${res}${pnlStr}${usdStr}${moodStr}\n`;
+    if (t.notes) txt += `   📝 ${t.notes}\n`;
+  });
+
+  txt += '\n═══════════════════════════════\n';
+  txt += '  #KedaiAfeng #BaseNetwork\n';
+  txt += '═══════════════════════════════\n';
+
+  const blob = new Blob([txt], { type: 'text/plain;charset=utf-8;' });
+  triggerDownload(blob, `kedai-afeng-laporan-${currentUser||'trader'}-${new Date().toISOString().slice(0,10)}.txt`);
+  showToast('✅ Laporan TXT didownload!');
+  closeDownloadModal();
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ═══════════════════════════════
+   RENDER JURNAL
+═══════════════════════════════ */
+function renderJurnal() {
+  const trades = getTrades();
+  const target = getTarget();
+
+  // Stats
+  const total = trades.length;
+  const wins = trades.filter(t => t.result === 'profit').length;
+  const wr = total > 0 ? Math.round(wins/total*100) : null;
+  const totalPnlUsd = trades.reduce((s, t) => s + (t.pnlUsd || 0), 0);
+  const avgPnlPct = trades.filter(t => t.pnlPct !== null).length > 0
+    ? trades.filter(t => t.pnlPct !== null).reduce((s,t) => s + t.pnlPct, 0) / trades.filter(t => t.pnlPct !== null).length
+    : null;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-winrate').textContent = wr !== null ? wr + '%' : '—';
+  document.getElementById('stat-winrate').className = 'jstat-val ' + (wr >= 50 ? 'c-good' : wr !== null ? 'c-bad' : 'c-neutral');
+
+  if (totalPnlUsd !== 0 || trades.some(t => t.pnlUsd !== null)) {
+    const sign = totalPnlUsd >= 0 ? '+' : '';
+    document.getElementById('stat-pnl').textContent = sign + '$' + Math.abs(totalPnlUsd).toFixed(2);
+    document.getElementById('stat-pnl').className = 'jstat-val ' + (totalPnlUsd >= 0 ? 'c-good' : 'c-bad');
+  } else {
+    document.getElementById('stat-pnl').textContent = '—';
+    document.getElementById('stat-pnl').className = 'jstat-val c-neutral';
+  }
+
+  if (avgPnlPct !== null) {
+    const s = avgPnlPct >= 0 ? '+' : '';
+    document.getElementById('stat-avg').textContent = s + avgPnlPct.toFixed(1) + '%';
+    document.getElementById('stat-avg').className = 'jstat-val ' + (avgPnlPct >= 0 ? 'c-good' : 'c-bad');
+  } else {
+    document.getElementById('stat-avg').textContent = '—';
+    document.getElementById('stat-avg').className = 'jstat-val c-neutral';
+  }
+
+  // Target banner
+  renderTargetBanner(target, totalPnlUsd, trades);
+
+  // Feed
+  const feed = document.getElementById('trade-feed');
+  const empty = document.getElementById('trade-empty');
+  if (trades.length === 0) {
+    empty.style.display = 'block';
+    feed.innerHTML = '';
+    feed.appendChild(empty);
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+
+  feed.innerHTML = trades.map(t => {
+    const sign = t.result === 'profit' ? '+' : t.result === 'loss' ? '−' : '';
+    const pnlClass = t.result === 'profit' ? 'c-good' : t.result === 'loss' ? 'c-bad' : 'c-neutral';
+    const pnlText = t.pnlPct !== null ? sign + Math.abs(t.pnlPct).toFixed(1) + '%' :
+      (t.result === 'profit' ? 'Profit' : t.result === 'loss' ? 'Loss' : 'Even');
+    const moodEmoji = t.mood ? t.mood.emoji : '—';
+    const moodLabel = t.mood ? t.mood.mood : '';
+    const moodChip = t.mood ? `<div class="mood-chip chip-${moodLabel === 'tenang' || moodLabel === 'sabar' ? 'calm' : moodLabel === 'fomo' || moodLabel === 'emosional' ? 'fomo' : 'ok'}">${moodLabel}</div>` : '';
+    const timeAgo = getTimeAgo(t.ts);
+    const noteText = t.notes ? `<div style="font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.4;">${t.notes.length > 60 ? t.notes.slice(0,60)+'…' : t.notes}</div>` : '';
+
+    return `<div class="trade-card">
+      <div class="trade-card-header">
+        <div>
+          <div class="trade-card-token">${t.token}</div>
+          <div class="trade-card-date">${timeAgo}${t.modal ? ' · modal $'+t.modal : ''}</div>
+        </div>
+        <div class="feed-mood">${moodEmoji}</div>
+        <div class="trade-card-pnl ${pnlClass}">${pnlText}</div>
+        ${moodChip}
+      </div>
+      <div class="trade-card-body">
+        <div class="trade-card-detail">
+          ${t.pnlUsd !== null ? `<strong>${t.pnlUsd >= 0 ? '+' : ''}$${Math.abs(t.pnlUsd).toFixed(2)}</strong> · ` : ''}
+          ${noteText}
+        </div>
+        <button class="trade-delete-btn" onclick="deleteTrade(${t.id}, event)" title="Hapus"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTargetBanner(target, totalPnlUsd, trades) {
+  const bannerVal = document.getElementById('target-banner-val');
+  const bannerLabel = document.getElementById('target-banner-label');
+  const bannerEdit = document.getElementById('target-banner-edit');
+  const progressWrap = document.getElementById('target-progress-wrap');
+
+  if (!target) {
+    bannerVal.innerHTML = '<span class="target-no-target"><i class="ti ti-plus" style="font-size:12px;"></i> Atur target profit kamu</span>';
+    bannerLabel.textContent = 'Target Profit';
+    bannerEdit.textContent = '';
+    progressWrap.style.display = 'none';
+    return;
+  }
+
+  // For harian targets, compute pnl from today's trades only
+  let relevantPnl = totalPnlUsd;
+  if (target.type === 'harian') {
+    const today = new Date().toDateString();
+    relevantPnl = trades
+      .filter(t => new Date(t.ts).toDateString() === today && t.pnlUsd !== null)
+      .reduce((s, t) => s + t.pnlUsd, 0);
+  }
+
+  const pct = Math.min(100, Math.max(0, (relevantPnl / target.amount) * 100));
+  const reached = relevantPnl >= target.amount;
+
+  bannerLabel.textContent = target.type === 'harian' ? 'Target Harian' : 'Target Bebas';
+  bannerEdit.textContent = reached ? '✅ TERCAPAI' : 'ubah ›';
+  bannerEdit.style.color = reached ? 'var(--teal)' : 'var(--ink4)';
+
+  const sign = relevantPnl >= 0 ? '+' : '';
+  bannerVal.innerHTML = `<span style="color:${reached ? 'var(--teal)' : relevantPnl > 0 ? 'var(--ink)' : 'var(--coral)'}">
+    ${sign}$${relevantPnl.toFixed(2)}</span> <span style="font-size:11px;color:var(--ink3);font-weight:400;">/ $${target.amount} target</span>`;
+
+  progressWrap.style.display = 'block';
+  document.getElementById('target-progress-fill').style.width = pct + '%';
+  document.getElementById('target-progress-fill').style.background = reached ? 'var(--teal)' : 'var(--gold)';
+  document.getElementById('target-progress-pnl').textContent = sign + '$' + relevantPnl.toFixed(2);
+  document.getElementById('target-progress-pnl').style.color = relevantPnl >= 0 ? 'var(--teal)' : 'var(--coral)';
+  document.getElementById('target-progress-pct').textContent = pct.toFixed(0) + '%';
+  document.getElementById('target-progress-goal').textContent = '$' + target.amount;
+}
+
+function deleteTrade(id, event) {
+  event.stopPropagation();
+  const trades = getTrades().filter(t => t.id !== id);
+  saveTrades(trades);
+  renderJurnal();
+  updateHomeStats();
+  showToast('Trade dihapus');
+}
+
+function getTimeAgo(ts) {
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff / 60000);
+  const h = Math.floor(m / 60);
+  const d = Math.floor(h / 24);
+  if (m < 2) return 'baru saja';
+  if (m < 60) return m + 'm lalu';
+  if (h < 24) return h + 'j lalu';
+  if (d === 1) return 'kemarin';
+  return d + ' hari lalu';
+}
+
+function updateHomeStats() {
+  const trades = getTrades();
+  const wins = trades.filter(t => t.result === 'profit').length;
+  const wr = trades.length > 0 ? Math.round(wins/trades.length*100) : 74;
+  const totalPnl = trades.reduce((s, t) => s + (t.pnlUsd || 0), 0);
+  // Update feed count on home
+  const countEl = document.querySelector('.feed-header-count');
+  if (countEl) countEl.textContent = trades.length + ' trade';
+}
+
+/* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('tag-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* wire home nav jurnal tab */
+document.addEventListener('DOMContentLoaded', () => {
+  const navItems = document.querySelectorAll('#home-page .nav-item');
+  if (navItems[1]) navItems[1].addEventListener('click', goToJurnal);
+});
+
+/* ═══════════════════════════════
+   PRE-ENTRY CHECK LOGIC
+═══════════════════════════════ */
+
+function fillExample(ca) {
+  document.getElementById('ca-input').value = ca;
+}
+
+function clearCheck() {
+  document.getElementById('ca-input').value = '';
+  document.getElementById('check-loading').classList.remove('active');
+  document.getElementById('check-error').classList.remove('active');
+  document.getElementById('check-result').classList.remove('active');
+  ['step-1','step-2','step-3'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+  });
+  document.getElementById('btn-check').disabled = false;
+}
+
+function setLoadingStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('step-'+i);
+    if (i < n) el.className = 'loading-step done';
+    else if (i === n) el.className = 'loading-step active';
+    else el.className = 'loading-step';
+  }
+}
+
+function formatUSD(n) {
+  if (!n || isNaN(n)) return '—';
+  n = parseFloat(n);
+  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
+  if (n >= 1) return '$' + n.toFixed(2);
+  if (n >= 0.001) return '$' + n.toFixed(4);
+  return '$' + n.toFixed(8);
+}
+
+function formatNum(n) {
+  if (!n || isNaN(n)) return '—';
+  n = parseFloat(n);
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+async function runCheck() {
+  const rawCA = document.getElementById('ca-input').value.trim();
+  const ca = rawCA;
+
+  // Validate CA format based on dungeon
+  if (currentDungeon === 'sol') {
+    // Solana: base58, 32-44 chars, alphanumeric (no 0, O, I, l)
+    if (!ca || !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(ca)) {
+      showError('Format CA Solana tidak valid. Contoh: So11111111111111111111111111111111111111112');
+      return;
+    }
+  } else {
+    if (!ca || !/^0x[0-9a-fA-F]{40}$/.test(ca)) {
+      showError('Format CA tidak valid. Harus berupa alamat Ethereum 0x... dengan 40 karakter hex.');
+      return;
+    }
+  }
+
+  document.getElementById('btn-check').disabled = true;
+  document.getElementById('check-result').classList.remove('active');
+  document.getElementById('check-error').classList.remove('active');
+  document.getElementById('check-loading').classList.add('active');
+
+  // Update loading step texts
+  const step1El = document.getElementById('step-1');
+  if (step1El) step1El.textContent = currentDungeon === 'sol'
+    ? '① Fetch multi-source: Gecko + Birdeye + GMGN'
+    : '① Fetch data onchain dari GeckoTerminal';
+
+  if (currentDungeon === 'sol') {
+    await runCheckSolana(ca);
+  } else {
+    await runCheckBase(ca.toLowerCase());
+  }
+}
+
+/* ─── BASE CHECK ─── */
+async function runCheckBase(ca) {
+  setLoadingStep(1);
+  let tokenData = null, poolData = null;
+
+  try {
+    const [tokenRes, poolsRes] = await Promise.all([
+      fetch(`https://api.geckoterminal.com/api/v2/networks/base/tokens/${ca}`, {
+        headers: { 'Accept': 'application/json;version=20230302' }
+      }),
+      fetch(`https://api.geckoterminal.com/api/v2/networks/base/tokens/${ca}/pools?page=1`, {
+        headers: { 'Accept': 'application/json;version=20230302' }
+      })
+    ]);
+
+    if (!tokenRes.ok) throw new Error('Token tidak ditemukan di Base network');
+
+    const tokenJson = await tokenRes.json();
+    const poolsJson = await poolsRes.json();
+
+    tokenData = tokenJson.data?.attributes;
+    if (!tokenData) throw new Error('Data token kosong');
+
+    poolData = poolsJson.data?.[0]?.attributes || null;
+
+  } catch (err) {
+    showError(err.message || 'Gagal fetch dari GeckoTerminal. Cek CA dan koneksi internet.');
+    return;
+  }
+
+  setLoadingStep(2);
+  await sleep(400);
+
+  const price = parseFloat(tokenData.price_usd) || 0;
+  const mcap = parseFloat(tokenData.market_cap_usd) || parseFloat(tokenData.fdv_usd) || 0;
+  const vol24 = parseFloat(tokenData.volume_usd?.h24) || 0;
+  const liq = parseFloat(poolData?.reserve_in_usd) || 0;
+  const priceChange1h = parseFloat(tokenData.price_change_percentage?.h1) || 0;
+  const priceChange24h = parseFloat(tokenData.price_change_percentage?.h24) || 0;
+  const priceChange6h = parseFloat(tokenData.price_change_percentage?.h6) || 0;
+  const buys24 = parseInt(poolData?.transactions?.h24?.buys) || 0;
+  const sells24 = parseInt(poolData?.transactions?.h24?.sells) || 0;
+
+  const riskResult = calculateRisk({ price, mcap, vol24, liq, priceChange1h, priceChange24h, buys24, sells24 });
+
+  setLoadingStep(3);
+
+  const tokenSymbol = tokenData.symbol || '?';
+  const tokenName = tokenData.name || tokenSymbol;
+
+  const prompt = buildPrompt({
+    symbol: tokenSymbol, name: tokenName, ca, price, mcap, vol24, liq,
+    priceChange1h, priceChange24h, priceChange6h,
+    buys24, sells24, riskScore: riskResult.score, riskLevel: riskResult.level,
+    poolName: poolData?.name || '—', dex: poolData?.dex_id || '—', network: 'Base'
+  });
+
+  let aiText = '';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Kamu adalah AI trading assistant untuk komunitas Kedai Afeng — trader Base network dengan modal kecil ($10-$100). 
+Berikan verdict pre-entry check yang jujur, ringkas, dan langsung to the point dalam bahasa Indonesia casual tapi informatif.
+Format respons: 3-4 kalimat saja. Mulai dengan verdict tegas (ENTRY / TUNGGU / SKIP), lalu alasan utama, lalu 1 tips konkret.
+Jangan ada disclaimer panjang. Tone: senior trader ngobrol sama junior.`,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      aiText = data.content?.[0]?.text || '';
+    }
+  } catch(e) { aiText = ''; }
+
+  if (!aiText) {
+    aiText = generateFallbackVerdict(riskResult, { vol24, liq, buys24, sells24, priceChange1h, priceChange24h, mcap, tokenSymbol });
+  }
+
+  document.getElementById('check-loading').classList.remove('active');
+
+  // Update external links for Base
+  document.getElementById('link-gecko').href = `https://www.geckoterminal.com/base/tokens/${ca}`;
+  document.getElementById('link-explorer').href = `https://basescan.org/token/${ca}`;
+  document.getElementById('link-explorer-label').textContent = 'Basescan';
+  document.getElementById('link-birdeye').style.display = 'none';
+  document.getElementById('sol-source-info').style.display = 'none';
+
+  renderResult({
+    tokenData, poolData, ca,
+    price, mcap, vol24, liq, priceChange24h,
+    buys24, sells24, riskResult, aiText,
+    priceChange1h, priceChange6h, priceChange24h
+  });
+}
+
+/* ─── SOLANA CHECK (multi-source) ─── */
+async function runCheckSolana(ca) {
+  setLoadingStep(1);
+
+  let tokenData = null, poolData = null;
+  let birdeyeData = null, gmgnData = null, jupiterData = null;
+  const activeSources = [];
+
+  // Source 1: GeckoTerminal (Solana)
+  try {
+    const [tokenRes, poolsRes] = await Promise.all([
+      fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${ca}`, {
+        headers: { 'Accept': 'application/json;version=20230302' }
+      }),
+      fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${ca}/pools?page=1`, {
+        headers: { 'Accept': 'application/json;version=20230302' }
+      })
+    ]);
+    if (tokenRes.ok) {
+      const tokenJson = await tokenRes.json();
+      tokenData = tokenJson.data?.attributes || null;
+      if (tokenData) activeSources.push('gecko');
+    }
+    if (poolsRes.ok) {
+      const poolsJson = await poolsRes.json();
+      poolData = poolsJson.data?.[0]?.attributes || null;
+    }
+  } catch(e) {}
+
+  // Source 2: Jupiter price API (no API key required)
+  try {
+    const jupRes = await fetch(`https://api.jup.ag/price/v2?ids=${ca}`);
+    if (jupRes.ok) {
+      const jupJson = await jupRes.json();
+      jupiterData = jupJson.data?.[ca] || null;
+      if (jupiterData) activeSources.push('jupiter');
+    }
+  } catch(e) {}
+
+  // Source 3: Birdeye public (no API key - use overview endpoint)
+  try {
+    const beRes = await fetch(`https://public-api.birdeye.so/public/price?address=${ca}`, {
+      headers: { 'X-Chain': 'solana' }
+    });
+    if (beRes.ok) {
+      const beJson = await beRes.json();
+      if (beJson.data) { birdeyeData = beJson.data; activeSources.push('birdeye'); }
+    }
+  } catch(e) {}
+
+  // Source 4: GMGN token info (public)
+  try {
+    const gmgnRes = await fetch(`https://gmgn.ai/api/v1/token_info/sol/${ca}`);
+    if (gmgnRes.ok) {
+      const gmgnJson = await gmgnRes.json();
+      if (gmgnJson.code === 0 && gmgnJson.data) { gmgnData = gmgnJson.data; activeSources.push('gmgn'); }
+    }
+  } catch(e) {}
+
+  // If no sources returned data at all
+  if (!tokenData && !jupiterData && !birdeyeData && !gmgnData) {
+    showError('Token tidak ditemukan di Solana network. Cek CA dan pastikan token sudah terdaftar.');
+    return;
+  }
+
+  setLoadingStep(2);
+  await sleep(400);
+
+  // Aggregate data from best available source
+  let price = 0, mcap = 0, vol24 = 0, liq = 0;
+  let priceChange1h = 0, priceChange24h = 0, priceChange6h = 0;
+  let buys24 = 0, sells24 = 0;
+  let tokenSymbol = '?', tokenName = '?';
+
+  if (tokenData) {
+    price = parseFloat(tokenData.price_usd) || 0;
+    mcap = parseFloat(tokenData.market_cap_usd) || parseFloat(tokenData.fdv_usd) || 0;
+    vol24 = parseFloat(tokenData.volume_usd?.h24) || 0;
+    priceChange1h = parseFloat(tokenData.price_change_percentage?.h1) || 0;
+    priceChange24h = parseFloat(tokenData.price_change_percentage?.h24) || 0;
+    priceChange6h = parseFloat(tokenData.price_change_percentage?.h6) || 0;
+    tokenSymbol = tokenData.symbol || '?';
+    tokenName = tokenData.name || tokenSymbol;
+  }
+
+  if (poolData) {
+    liq = parseFloat(poolData.reserve_in_usd) || 0;
+    buys24 = parseInt(poolData.transactions?.h24?.buys) || 0;
+    sells24 = parseInt(poolData.transactions?.h24?.sells) || 0;
+  }
+
+  // Enrich with Jupiter if GeckoTerminal price missing
+  if (jupiterData && !price) {
+    price = parseFloat(jupiterData.price) || 0;
+  }
+
+  // Enrich with Birdeye
+  if (birdeyeData) {
+    if (!price && birdeyeData.value) price = parseFloat(birdeyeData.value) || 0;
+    if (!priceChange24h && birdeyeData.priceChange24h) priceChange24h = parseFloat(birdeyeData.priceChange24h) || 0;
+  }
+
+  // Enrich with GMGN
+  if (gmgnData) {
+    if (!tokenSymbol || tokenSymbol === '?') tokenSymbol = gmgnData.symbol || '?';
+    if (!tokenName || tokenName === '?') tokenName = gmgnData.name || tokenSymbol;
+    if (!mcap && gmgnData.market_cap) mcap = parseFloat(gmgnData.market_cap) || 0;
+    if (!vol24 && gmgnData.volume_24h) vol24 = parseFloat(gmgnData.volume_24h) || 0;
+    if (!price && gmgnData.price) price = parseFloat(gmgnData.price) || 0;
+  }
+
+  // Fake tokenData object for renderResult compatibility
+  if (!tokenData) {
+    tokenData = {
+      symbol: tokenSymbol, name: tokenName,
+      price_usd: price, market_cap_usd: mcap, fdv_usd: mcap,
+      volume_usd: { h24: vol24 },
+      price_change_percentage: { h1: priceChange1h, h6: priceChange6h, h24: priceChange24h }
+    };
+  }
+
+  const riskResult = calculateRisk({ price, mcap, vol24, liq, priceChange1h, priceChange24h, buys24, sells24 });
+
+  setLoadingStep(3);
+
+  // Update source badges
+  const srcEl = (id, cls) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.className = 'source-badge ' + cls + (activeSources.includes(cls) ? ' active' : '');
+      el.textContent = activeSources.includes(cls) ? '✓ ' + el.textContent.replace('✓ ','') : el.textContent.replace('✓ ','');
+    }
+  };
+  srcEl('src-gecko', 'gecko');
+  srcEl('src-birdeye', 'birdeye');
+  srcEl('src-gmgn', 'gmgn');
+  srcEl('src-jupiter', 'jupiter');
+
+  const sourceNames = activeSources.map(s => s === 'gecko' ? 'GeckoTerminal' : s === 'birdeye' ? 'Birdeye' : s === 'gmgn' ? 'GMGN' : 'Jupiter').join(' + ');
+
+  const prompt = buildPrompt({
+    symbol: tokenSymbol, name: tokenName, ca, price, mcap, vol24, liq,
+    priceChange1h, priceChange24h, priceChange6h,
+    buys24, sells24, riskScore: riskResult.score, riskLevel: riskResult.level,
+    poolName: poolData?.name || '—', dex: poolData?.dex_id || '—',
+    network: 'Solana', extraContext: `Data dari: ${sourceNames}. Ini token Solana/SPL.`
+  });
+
+  let aiText = '';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Kamu adalah AI trading assistant untuk komunitas Kedai Afeng — trader Solana dengan modal kecil ($10-$100). 
+Berikan verdict pre-entry check yang jujur, ringkas, dan langsung to the point dalam bahasa Indonesia casual tapi informatif.
+Format respons: 3-4 kalimat saja. Mulai dengan verdict tegas (ENTRY / TUNGGU / SKIP), lalu alasan utama, lalu 1 tips konkret.
+Jangan ada disclaimer panjang. Tone: senior trader ngobrol sama junior. Ini jaringan Solana.`,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      aiText = data.content?.[0]?.text || '';
+    }
+  } catch(e) { aiText = ''; }
+
+  if (!aiText) {
+    aiText = generateFallbackVerdict(riskResult, { vol24, liq, buys24, sells24, priceChange1h, priceChange24h, mcap, tokenSymbol });
+  }
+
+  document.getElementById('check-loading').classList.remove('active');
+
+  // Update external links for Solana
+  document.getElementById('link-gecko').href = `https://www.geckoterminal.com/solana/tokens/${ca}`;
+  document.getElementById('link-explorer').href = `https://solscan.io/token/${ca}`;
+  document.getElementById('link-explorer-label').textContent = 'Solscan';
+  document.getElementById('link-birdeye').href = `https://birdeye.so/token/${ca}?chain=solana`;
+  document.getElementById('link-birdeye').style.display = '';
+  document.getElementById('sol-source-info').style.display = '';
+
+  renderResult({
+    tokenData, poolData, ca,
+    price, mcap, vol24, liq, priceChange24h,
+    buys24, sells24, riskResult, aiText,
+    priceChange1h, priceChange6h, priceChange24h
+  });
+}
+
+function buildPrompt(d) {
+  const volMcapRatio = d.mcap > 0 ? ((d.vol24 / d.mcap) * 100).toFixed(1) : 'N/A';
+  const bsRatio = d.sells24 > 0 ? (d.buys24 / d.sells24).toFixed(2) : 'N/A';
+  const network = d.network || 'Base';
+  const extra = d.extraContext ? `\n${d.extraContext}` : '';
+
+  return `Token: ${d.symbol} (${d.name})
+CA: ${d.ca}
+Network: ${network}${extra}
+
+Data onchain:
+- Harga: ${formatUSD(d.price)}
+- Market Cap / FDV: ${formatUSD(d.mcap)}
+- Volume 24j: ${formatUSD(d.vol24)}
+- Likuiditas pool: ${formatUSD(d.liq)}
+- Perubahan harga: 1j=${d.priceChange1h > 0 ? '+' : ''}${d.priceChange1h.toFixed(1)}% | 6j=${d.priceChange6h > 0 ? '+' : ''}${d.priceChange6h.toFixed(1)}% | 24j=${d.priceChange24h > 0 ? '+' : ''}${d.priceChange24h.toFixed(1)}%
+- Transaksi 24j: ${d.buys24} buys / ${d.sells24} sells (rasio ${bsRatio})
+- Vol/MCap ratio: ${volMcapRatio}%
+- Risk score: ${d.riskScore}/100 (${d.riskLevel})
+- Pool: ${d.poolName} di ${d.dex}
+
+Konteks user: trader modal kecil ${network}, biasanya masuk $10-50 per trade.
+
+Berikan verdict pre-entry check singkat dan jujur.`;
+}
+
+function generateFallbackVerdict(risk, d) {
+  const bsRatio = d.sells24 > 0 ? d.buys24 / d.sells24 : 1;
+
+  if (risk.score >= 75) {
+    return `⚠️ <strong>SKIP</strong> dulu untuk token ini. Risk score ${risk.score}/100 — terlalu berbahaya untuk modal kecil. Likuiditas rendah (${formatUSD(d.liq)}) artinya slippage bisa brutal dan exit susah. Tunggu volume dan likuiditas tumbuh dulu sebelum masuk.`;
+  } else if (risk.score >= 50) {
+    return `⏳ <strong>TUNGGU</strong> dan observasi dulu. Ada beberapa tanda hati-hati: ${d.priceChange1h > 15 ? 'pumped keras 1 jam terakhir (' + d.priceChange1h.toFixed(0) + '%), risiko dump' : 'volatilitas tinggi'}. Volume 24j ${formatUSD(d.vol24)} ${d.vol24 < 10000 ? 'masih tipis' : 'cukup'}. Kalau mau entry, sizing kecil dulu — maksimal 10% modal.`;
+  } else {
+    const sentiment = bsRatio >= 1.5 ? 'buy pressure kuat' : 'balanced';
+    return `✅ <strong>ENTRY</strong> bisa dipertimbangkan. Fundamental onchain terlihat ${sentiment} — ratio buy/sell ${d.buys24}:${d.sells24}, likuiditas ${formatUSD(d.liq)} cukup untuk modal kecil. Pastikan entry di support, bukan chase candle. Set stop loss 10-15% dari entry.`;
+  }
+}
+
+function calculateRisk({ price, mcap, vol24, liq, priceChange1h, priceChange24h, buys24, sells24 }) {
+  let score = 0;
+  const checks = [];
+
+  // Likuiditas
+  if (liq < 10000) { score += 30; checks.push({ label: 'Likuiditas', val: formatUSD(liq), status: 'bad', note: 'Sangat rendah' }); }
+  else if (liq < 50000) { score += 15; checks.push({ label: 'Likuiditas', val: formatUSD(liq), status: 'warn', note: 'Cukup rendah' }); }
+  else { checks.push({ label: 'Likuiditas', val: formatUSD(liq), status: 'ok', note: 'Aman' }); }
+
+  // Volume
+  if (vol24 < 5000) { score += 25; checks.push({ label: 'Volume 24j', val: formatUSD(vol24), status: 'bad', note: 'Hampir tidak ada' }); }
+  else if (vol24 < 50000) { score += 10; checks.push({ label: 'Volume 24j', val: formatUSD(vol24), status: 'warn', note: 'Tipis' }); }
+  else { checks.push({ label: 'Volume 24j', val: formatUSD(vol24), status: 'ok', note: 'Normal' }); }
+
+  // Pump 1j
+  const abs1h = Math.abs(priceChange1h);
+  if (abs1h > 50) { score += 20; checks.push({ label: 'Pump 1j', val: (priceChange1h > 0 ? '+' : '') + priceChange1h.toFixed(1) + '%', status: 'bad', note: 'Extreme — candle vertikal' }); }
+  else if (abs1h > 20) { score += 10; checks.push({ label: 'Pump 1j', val: (priceChange1h > 0 ? '+' : '') + priceChange1h.toFixed(1) + '%', status: 'warn', note: 'Tinggi — hati-hati FOMO' }); }
+  else { checks.push({ label: 'Pump 1j', val: (priceChange1h > 0 ? '+' : '') + priceChange1h.toFixed(1) + '%', status: 'ok', note: 'Normal' }); }
+
+  // Buy/Sell ratio
+  const total = buys24 + sells24;
+  if (total > 0) {
+    const sellPct = (sells24 / total) * 100;
+    if (sellPct > 65) { score += 15; checks.push({ label: 'Sell pressure', val: sellPct.toFixed(0) + '% sells', status: 'bad', note: 'Dominan seller' }); }
+    else if (sellPct < 35) { checks.push({ label: 'Buy pressure', val: (100-sellPct).toFixed(0) + '% buys', status: 'ok', note: 'Buyer dominan' }); }
+    else { checks.push({ label: 'Buy/Sell', val: buys24 + 'B / ' + sells24 + 'S', status: 'ok', note: 'Balanced' }); }
+  }
+
+  // Market cap
+  if (mcap > 0) {
+    if (mcap < 100000) { score += 10; checks.push({ label: 'Market Cap', val: formatUSD(mcap), status: 'warn', note: 'Mikro' }); }
+    else if (mcap < 1000000) { checks.push({ label: 'Market Cap', val: formatUSD(mcap), status: 'warn', note: 'Kecil' }); }
+    else { checks.push({ label: 'Market Cap', val: formatUSD(mcap), status: 'ok', note: 'Terukur' }); }
+  }
+
+  score = Math.min(100, score);
+
+  let level, color;
+  if (score <= 25) { level = 'LOW RISK'; color = 'var(--teal)'; }
+  else if (score <= 50) { level = 'MEDIUM'; color = 'var(--gold)'; }
+  else if (score <= 74) { level = 'HIGH RISK'; color = 'var(--coral)'; }
+  else { level = 'EXTREME'; color = '#cc2222'; }
+
+  return { score, level, color, checks };
+}
+
+function renderResult({ tokenData, poolData, ca, price, mcap, vol24, liq,
+    buys24, sells24, riskResult, aiText, priceChange1h, priceChange6h, priceChange24h }) {
+
+  // Token hero
+  document.getElementById('res-symbol').textContent = '$' + (tokenData.symbol || '?');
+  document.getElementById('res-name').textContent = tokenData.name || '—';
+  document.getElementById('res-price').textContent = formatUSD(price);
+
+  // Network badge
+  const netBadgeEl = document.getElementById('res-network-badge');
+  if (netBadgeEl) netBadgeEl.textContent = currentDungeon === 'sol' ? 'Solana Network' : 'Base Network';
+
+  const chg = priceChange24h;
+  const chgEl = document.getElementById('res-change');
+  chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+  chgEl.className = 'token-price-change ' + (chg >= 0 ? 'c-good' : 'c-bad');
+
+  document.getElementById('res-mcap').textContent = mcap ? formatUSD(mcap) : formatUSD(parseFloat(tokenData.fdv_usd));
+  document.getElementById('res-vol').textContent = formatUSD(vol24);
+  document.getElementById('res-liq').textContent = formatUSD(liq);
+
+  // Pool
+  if (poolData) {
+    document.getElementById('res-pair').textContent = poolData.name || '—';
+    document.getElementById('res-dex').textContent = poolData.dex_id ? poolData.dex_id.toUpperCase() : '—';
+    const txns24 = (poolData.transactions?.h24?.buys || 0) + (poolData.transactions?.h24?.sells || 0);
+    document.getElementById('res-txns').textContent = txns24 + ' tx/24j';
+  }
+
+  // Risk bar
+  const riskBadge = document.getElementById('res-risk-badge');
+  riskBadge.textContent = riskResult.level;
+  riskBadge.className = 'risk-badge ' + (
+    riskResult.score <= 25 ? 'risk-low' :
+    riskResult.score <= 50 ? 'risk-mid' :
+    riskResult.score <= 74 ? 'risk-high' : 'risk-extreme'
+  );
+
+  const bar = document.getElementById('res-risk-bar');
+  bar.style.background = riskResult.color;
+  setTimeout(() => { bar.style.width = riskResult.score + '%'; }, 100);
+
+  // Risk checks
+  const checksEl = document.getElementById('res-risk-checks');
+  checksEl.innerHTML = riskResult.checks.map(c => `
+    <div class="risk-check-row">
+      <span class="risk-check-icon">${c.status==='ok' ? '✅' : c.status==='warn' ? '⚠️' : '🔴'}</span>
+      <span class="risk-check-label">${c.label}</span>
+      <span class="risk-check-val ${c.status==='ok' ? 'c-good' : c.status==='warn' ? 'c-gold' : 'c-bad'}">${c.val}</span>
+    </div>
+  `).join('');
+
+  // Signals
+  const signals = buildSignals({ price, mcap, vol24, liq, priceChange1h, priceChange24h, buys24, sells24 });
+  const sigEl = document.getElementById('res-signals');
+  sigEl.innerHTML = signals.map(s => `
+    <div class="signal-pill ${s.type === 'bull' ? 'signal-bull' : s.type === 'bear' ? 'signal-bear' : 'signal-neutral'}">
+      <span class="signal-pill-icon">${s.icon}</span>
+      <span>${s.label}</span>
+    </div>
+  `).join('');
+
+  // AI verdict
+  const verdictTag = document.getElementById('res-verdict-tag');
+  const verdictText = document.getElementById('res-verdict-text');
+
+  const isEntry = aiText.includes('ENTRY') && !aiText.includes('SKIP') && !aiText.includes('TUNGGU');
+  const isSkip = aiText.includes('SKIP');
+  verdictTag.textContent = isEntry ? '✅ ENTRY' : isSkip ? '🔴 SKIP' : '⏳ TUNGGU';
+  verdictTag.className = 'ai-verdict-badge ' + (isEntry ? 'chip-calm' : isSkip ? 'chip-fomo' : 'chip-ok');
+
+  typeText(verdictText, aiText);
+
+  // Only set gecko link here if not already set
+  if (!document.getElementById('link-gecko').href || document.getElementById('link-gecko').href === '#') {
+    const geckoNetwork = currentDungeon === 'sol' ? 'solana' : 'base';
+    document.getElementById('link-gecko').href = `https://www.geckoterminal.com/${geckoNetwork}/tokens/${ca}`;
+  }
+
+  // Disclaimer
+  const disclaimerEl = document.getElementById('check-disclaimer');
+  if (disclaimerEl) {
+    disclaimerEl.textContent = currentDungeon === 'sol'
+      ? 'Data dari GeckoTerminal, Birdeye, GMGN & Jupiter. Bukan saran finansial. DYOR selalu. 🙏'
+      : 'Data dari GeckoTerminal. Bukan saran finansial. DYOR selalu. 🙏';
+  }
+
+  document.getElementById('check-result').classList.add('active');
+  document.getElementById('btn-check').disabled = false;
+
+  // Scroll to result
+  setTimeout(() => {
+    document.querySelector('.check-wrap').scrollTo({ top: 200, behavior: 'smooth' });
+  }, 300);
+}
+
+function buildSignals({ price, mcap, vol24, liq, priceChange1h, priceChange24h, buys24, sells24 }) {
+  const signals = [];
+  const total = buys24 + sells24;
+
+  // Volume/MCap ratio
+  if (mcap > 0) {
+    const ratio = vol24 / mcap;
+    if (ratio > 0.3) signals.push({ type: 'bull', icon: '🔥', label: 'Vol/MCap tinggi' });
+    else if (ratio < 0.05) signals.push({ type: 'bear', icon: '💤', label: 'Vol/MCap rendah' });
+  }
+
+  // Price momentum
+  if (priceChange1h > 10) signals.push({ type: 'bear', icon: '🚨', label: 'Pump keras 1j' });
+  else if (priceChange1h > 3) signals.push({ type: 'neutral', icon: '📈', label: 'Momentum positif' });
+  else if (priceChange1h < -10) signals.push({ type: 'bear', icon: '📉', label: 'Dump 1j terakhir' });
+
+  // Buy pressure
+  if (total > 0 && buys24 / total > 0.6) signals.push({ type: 'bull', icon: '💪', label: 'Buy pressure kuat' });
+  if (total > 0 && sells24 / total > 0.6) signals.push({ type: 'bear', icon: '⚠️', label: 'Sell pressure dominan' });
+
+  // Liquidity
+  if (liq > 100000) signals.push({ type: 'bull', icon: '💧', label: 'Likuiditas bagus' });
+  else if (liq < 20000) signals.push({ type: 'bear', icon: '🏜️', label: 'Likuiditas tipis' });
+
+  // 24h trend
+  if (priceChange24h > 20) signals.push({ type: 'neutral', icon: '🌙', label: 'Sudah run 24j' });
+  else if (priceChange24h < -20) signals.push({ type: 'bull', icon: '🔄', label: 'Potential reversal' });
+
+  // Transaction count
+  if (total > 500) signals.push({ type: 'bull', icon: '👥', label: 'Ramai transaksi' });
+  else if (total < 50) signals.push({ type: 'bear', icon: '👻', label: 'Transaksi sepi' });
+
+  return signals.slice(0, 6);
+}
+
+async function typeText(el, text) {
+  el.innerHTML = '';
+  // Parse the text to handle HTML tags properly
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = text;
+  const plainText = tempDiv.innerHTML;
+
+  el.innerHTML = '<span class="typing-cursor"></span>';
+  await sleep(200);
+
+  el.innerHTML = text;
+}
+
+function showError(msg) {
+  document.getElementById('check-loading').classList.remove('active');
+  document.getElementById('check-result').classList.remove('active');
+  document.getElementById('error-msg').textContent = msg;
+  document.getElementById('check-error').classList.add('active');
+  document.getElementById('btn-check').disabled = false;
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ═══════════════════════════════════════════════════
+   POLA PAGE — Pattern Analysis
+═══════════════════════════════════════════════════ */
+function renderPola() {
+  const trades = getTrades();
+  const content = document.getElementById('pola-content');
+  if (trades.length < 3) {
+    content.innerHTML = `<div class="pola-empty"><div class="pola-empty-icon">📊</div>Belum cukup data.<br>Catat minimal 3 trade dulu ya!</div>`;
+    return;
+  }
+  content.innerHTML = buildPolaHTML(trades);
+  setTimeout(() => {
+    document.querySelectorAll('#pola-trend-bars .mini-bar').forEach(el => {
+      const h = el.dataset.h; if(h) el.style.height = h + 'px';
+    });
+  }, 120);
+  loadPolaAI(trades);
+}
+
+function buildPolaHTML(trades) {
+  const wins = trades.filter(t=>t.result==='profit');
+  const losses = trades.filter(t=>t.result==='loss');
+  const evens = trades.filter(t=>t.result==='even');
+  const total = trades.length;
+  const wr = Math.round(wins.length/total*100);
+  const moodMap = {}, moodResult = {};
+  const moodIcons = {tenang:'😌',sabar:'😎',fomo:'😰',emosional:'😤',ragu:'🤔'};
+  const moodLbls = {tenang:'Tenang',sabar:'Sabar',fomo:'FOMO',emosional:'Emosi',ragu:'Ragu'};
+  trades.forEach(t => {
+    if(t.mood) {
+      const m = t.mood.mood;
+      moodMap[m] = (moodMap[m]||0) + 1;
+      if(!moodResult[m]) moodResult[m] = {w:0,l:0};
+      if(t.result==='profit') moodResult[m].w++; else if(t.result==='loss') moodResult[m].l++;
+    }
+  });
+  const tokenStats = {};
+  trades.forEach(t => {
+    if(!tokenStats[t.token]) tokenStats[t.token] = {pnl:0,trades:0,wins:0};
+    tokenStats[t.token].trades++; tokenStats[t.token].pnl += (t.pnlUsd||0);
+    if(t.result==='profit') tokenStats[t.token].wins++;
+  });
+  const tokenList = Object.entries(tokenStats).map(([k,v])=>({name:k,...v}));
+  tokenList.sort((a,b)=>b.pnl-a.pnl);
+  const bestTokens = tokenList.slice(0,3);
+  const worstTokens = [...tokenList].sort((a,b)=>a.pnl-b.pnl).slice(0,3).filter(t=>t.pnl<0);
+  const recent = [...trades].reverse().slice(-7);
+  const maxPnl = Math.max(...recent.map(t=>Math.abs(t.pnlPct||0)),1);
+  const moodsUsed = Object.keys(moodMap).filter(m=>moodMap[m]>0);
+  const maxMood = Math.max(...moodsUsed.map(m=>moodMap[m]),1);
+
+  return `<div class="pola-section">
+    <div class="section-label">overview pola</div>
+    <div class="ai-narration" id="pola-ai-narration">
+      <div class="ai-narration-header">
+        <i class="ti ti-robot ai-narration-icon"></i>
+        <span class="ai-narration-title">AI · Analisa Polamu</span>
+        <span class="ai-narration-badge">Claude AI</span>
+      </div>
+      <div class="ai-narration-loading" id="pola-ai-loading"><span class="spinner">⏳</span> Menganalisa ${total} trade kamu...</div>
+      <div class="ai-narration-text" id="pola-ai-text" style="display:none;"></div>
+    </div>
+    <div class="pola-chart-card">
+      <div class="pola-chart-title"><i class="ti ti-chart-bar"></i> PnL Trend — ${recent.length} Trade Terakhir</div>
+      <div class="mini-bars" id="pola-trend-bars">
+        ${recent.map(t => {
+          const pct = t.pnlPct !== null ? Math.abs(t.pnlPct) : 0;
+          const hPx = maxPnl > 0 ? Math.round((pct/maxPnl)*52)+5 : 5;
+          const cls = t.result==='profit'?'profit':t.result==='loss'?'loss':'even';
+          return `<div class="mini-bar-wrap">
+            <div class="mini-bar ${cls}" data-h="${hPx}" style="height:3px;"></div>
+            <div class="mini-bar-label">${t.token.replace('$','').slice(0,5)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div style="display:flex;gap:12px;margin-top:10px;">
+        <span style="font-size:10px;color:var(--teal);">▮ Profit ${wins.length}</span>
+        <span style="font-size:10px;color:var(--coral);">▮ Loss ${losses.length}</span>
+        <span style="font-size:10px;color:var(--gold);">▮ Even ${evens.length}</span>
+        <span style="font-size:10px;color:var(--ink3);margin-left:auto;">WR ${wr}%</span>
+      </div>
+    </div>
+    ${moodsUsed.length > 0 ? `
+    <div class="pola-chart-card">
+      <div class="pola-chart-title"><i class="ti ti-mood-smile"></i> Distribusi Emosi Entry</div>
+      <div class="mood-dist">
+        ${moodsUsed.map(m => {
+          const tot_m = moodResult[m].w+moodResult[m].l;
+          const wr_m = tot_m>0 ? Math.round(moodResult[m].w/tot_m*100) : 0;
+          const pct = Math.round(moodMap[m]/maxMood*100);
+          return `<div class="mood-dist-item">
+            <div class="mood-dist-emoji">${moodIcons[m]||'❓'}</div>
+            <div class="mood-dist-count">${moodMap[m]}</div>
+            <div class="mood-dist-label">${moodLbls[m]||m}</div>
+            <div class="mood-dist-bar-bg"><div class="mood-dist-bar-fill" style="width:${pct}%"></div></div>
+            <div style="font-size:9px;color:var(--ink4);margin-top:3px;">WR ${wr_m}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="pola-chart-card">
+      <div class="pola-chart-title"><i class="ti ti-table"></i> Emosi × Hasil Trade</div>
+      <div class="mood-matrix">
+        <div class="mm-header">MOOD</div><div class="mm-header">WIN%</div><div class="mm-header">TRADES</div>
+        ${moodsUsed.map(m => {
+          const tot_m = moodResult[m].w+moodResult[m].l;
+          const wr_m = tot_m>0 ? Math.round(moodResult[m].w/tot_m*100) : 0;
+          const cls = wr_m>=60?'highlight-good':wr_m<=35?'highlight-bad':'';
+          return `<div class="mm-cell"><div class="mm-cell-val">${moodIcons[m]}</div><div class="mm-cell-sub">${moodLbls[m]}</div></div>
+          <div class="mm-cell ${cls}"><div class="mm-cell-val" style="color:${wr_m>=60?'var(--teal)':wr_m<=35?'var(--coral)':'var(--ink)'}">${wr_m}%</div></div>
+          <div class="mm-cell"><div class="mm-cell-val">${moodMap[m]}</div></div>`;
+        }).join('')}
+      </div>
+    </div>` : ''}
+    ${bestTokens.length>0?`<div class="pola-chart-card">
+      <div class="pola-chart-title"><i class="ti ti-trophy"></i> Token Terbaik</div>
+      <div class="token-rank-list">${bestTokens.map((t,i)=>`<div class="token-rank-item">
+        <span class="token-rank-num">#${i+1}</span>
+        <span class="token-rank-name">${t.name}</span>
+        <span class="token-rank-trades c-neutral">${t.trades}x</span>
+        <span class="token-rank-pnl ${t.pnl>=0?'c-good':'c-bad'}">${t.pnl>=0?'+':''}$${Math.abs(t.pnl).toFixed(2)}</span>
+      </div>`).join('')}</div>
+    </div>`:''}
+    ${worstTokens.length>0?`<div class="pola-chart-card">
+      <div class="pola-chart-title"><i class="ti ti-skull"></i> Token Terburuk</div>
+      <div class="token-rank-list">${worstTokens.map((t,i)=>`<div class="token-rank-item">
+        <span class="token-rank-num">#${i+1}</span>
+        <span class="token-rank-name">${t.name}</span>
+        <span class="token-rank-trades c-neutral">${t.trades}x</span>
+        <span class="token-rank-pnl c-bad">-$${Math.abs(t.pnl).toFixed(2)}</span>
+      </div>`).join('')}</div>
+    </div>`:''}
+    <div class="tip-cards" id="pola-tips"></div>
+  </div>`;
+}
+
+async function loadPolaAI(trades) {
+  const wins = trades.filter(t=>t.result==='profit');
+  const wr = Math.round(wins.length/trades.length*100);
+  const totalPnl = trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+  const moodMap = {};
+  trades.forEach(t=>{if(t.mood){const m=t.mood.mood;if(!moodMap[m])moodMap[m]={w:0,total:0};moodMap[m].total++;if(t.result==='profit')moodMap[m].w++;}});
+  const moodWR = {};
+  Object.keys(moodMap).forEach(m=>{moodWR[m]=Math.round(moodMap[m].w/moodMap[m].total*100);});
+  const notesSample = trades.slice(0,5).map(t=>t.notes).filter(Boolean).join('; ');
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:500,
+        system:'Kamu adalah trading coach untuk trader crypto modal kecil di Indonesia. Analisa data mereka dan berikan insight yang jujur, konkret, dan supportif dalam bahasa Indonesia casual.',
+        messages:[{role:'user',content:`Trader ${currentUser||'ini'} punya ${trades.length} trade. Winrate: ${wr}%. Total PnL: ${totalPnl>=0?'+':''}$${Math.abs(totalPnl).toFixed(2)}. Winrate per mood entry: ${JSON.stringify(moodWR)}. Contoh catatan: "${notesSample}". Analisa pola trading mereka: (1) gambaran umum performa, (2) pola emosi terkuat, (3) pola entry dari catatan, (4) satu saran paling konkret. Max 5 kalimat, bahasa Indonesia casual.`}]
+      })
+    });
+    if(resp.ok){const d=await resp.json();const t=d.content?.[0]?.text||'';if(t){document.getElementById('pola-ai-loading').style.display='none';const el=document.getElementById('pola-ai-text');el.style.display='block';el.innerHTML=t.replace(/\n/g,'<br>');buildPolaTips(trades,moodWR,wr);return;}}
+  } catch(e){}
+  // Fallback
+  const bestMood=Object.keys(moodWR).sort((a,b)=>moodWR[b]-moodWR[a])[0];
+  const worstMood=Object.keys(moodWR).sort((a,b)=>moodWR[a]-moodWR[b])[0];
+  const moodLbls={tenang:'tenang',sabar:'sabar',fomo:'FOMO',emosional:'emosional',ragu:'ragu'};
+  let text=`Dari ${trades.length} trade, winrate kamu <strong>${wr}%</strong> dengan total PnL <strong>${totalPnl>=0?'+':''}$${Math.abs(totalPnl).toFixed(2)}</strong>. `;
+  if(bestMood&&worstMood&&bestMood!==worstMood)text+=`Kamu paling perform saat <strong>${moodLbls[bestMood]||bestMood}</strong> (WR ${moodWR[bestMood]}%), dan paling berantakan saat <strong>${moodLbls[worstMood]||worstMood}</strong> (WR ${moodWR[worstMood]}%). `;
+  text+=wr>=60?`Secara keseluruhan performamu bagus — fokus pertahankan konsistensi.`:wr>=45?`Winrate di area tengah — coba lebih selektif pilih setup sebelum entry.`:`Winrate masih perlu ditingkatkan — kurangi trade impulsif dan tunggu konfirmasi lebih kuat.`;
+  document.getElementById('pola-ai-loading').style.display='none';const el=document.getElementById('pola-ai-text');el.style.display='block';el.innerHTML=text;
+  buildPolaTips(trades,moodWR,wr);
+}
+
+function buildPolaTips(trades,moodWR,wr) {
+  const tipsEl=document.getElementById('pola-tips');if(!tipsEl)return;
+  const tips=[];
+  const moodLbls={tenang:'tenang 😌',sabar:'sabar 😎',fomo:'FOMO 😰',emosional:'emosional 😤',ragu:'ragu 🤔'};
+  const worstMood=Object.keys(moodWR).sort((a,b)=>moodWR[a]-moodWR[b])[0];
+  if(worstMood&&moodWR[worstMood]<40)tips.push({icon:'🔴',text:`<strong>Hindari entry saat ${moodLbls[worstMood]||worstMood}</strong> — winrate kamu cuma ${moodWR[worstMood]}% di kondisi ini. Pause, napas, baru entry.`});
+  if(wr<50)tips.push({icon:'📐',text:`<strong>Perketat kriteria entry.</strong> Winrate ${wr}% artinya lebih banyak loss. Coba tambah 1 konfirmasi teknikal sebelum masuk.`});
+  else if(wr>=65)tips.push({icon:'✅',text:`<strong>Winrate ${wr}% sangat bagus!</strong> Saatnya perhatikan risk management — jangan oversize satu trade.`});
+  const fomoLoss=trades.filter(t=>t.mood?.mood==='fomo'&&t.result==='loss');
+  if(fomoLoss.length>=2)tips.push({icon:'⚠️',text:`<strong>FOMO = musuh utamamu.</strong> ${fomoLoss.length} loss dari entry FOMO. Set rule: kalau pump >15% dalam 1 jam, SKIP dan tunggu retrace.`});
+  if(tips.length===0)tips.push({icon:'💡',text:`<strong>Terus catat setiap trade</strong> — semakin banyak data, semakin akurat analisa pola kamu!`});
+  tipsEl.innerHTML=`<div class="pola-chart-title" style="margin-bottom:8px;"><i class="ti ti-bulb" style="color:var(--gold);"></i> Saran Konkret</div>${tips.map(t=>`<div class="tip-card"><span class="tip-card-icon">${t.icon}</span><div class="tip-card-text">${t.text}</div></div>`).join('')}`;
+}
+
+/* ═══════════════════════════════════════════════════
+   WEEKLY REVIEW PAGE
+═══════════════════════════════════════════════════ */
+function renderWeeklyReview() {
+  const trades = getTrades();
+  const now = new Date(); const ws = new Date(now); ws.setDate(now.getDate()-now.getDay()); ws.setHours(0,0,0,0);
+  const weekTrades = trades.filter(t=>t.ts>=ws.getTime());
+  const useTrades = weekTrades.length > 0 ? weekTrades : trades.slice(0,10);
+  const isAllTime = weekTrades.length === 0;
+  const content = document.getElementById('review-content');
+  if(trades.length===0){content.innerHTML=`<div class="pola-empty"><div class="pola-empty-icon">🌙</div>Belum ada trade.<br>Catat trade dulu!</div>`;return;}
+  content.innerHTML = buildReviewHTML(useTrades, isAllTime);
+  setTimeout(animateReviewBars, 150);
+  loadReviewAI(useTrades);
+}
+
+function calcDisciplineScore(trades) {
+  if(!trades.length) return 0;
+  const total=trades.length;
+  const moodsRec=trades.filter(t=>t.mood).length;
+  const badMoods=trades.filter(t=>t.mood?.mood==='fomo'||t.mood?.mood==='emosional').length;
+  const badRatio=moodsRec>0?badMoods/moodsRec:0;
+  const wins=trades.filter(t=>t.result==='profit').length;
+  const withNotes=trades.filter(t=>t.notes&&t.notes.length>5).length;
+  const days=new Set(trades.map(t=>new Date(t.ts).toDateString())).size;
+  return Math.min(100,Math.round((1-badRatio)*30+(wins/total)*30+(withNotes/total)*20+Math.min(20,days*4)));
+}
+
+function buildReviewHTML(trades, isAllTime) {
+  const wins=trades.filter(t=>t.result==='profit');const losses=trades.filter(t=>t.result==='loss');
+  const total=trades.length;const wr=total>0?Math.round(wins.length/total*100):0;
+  const totalPnl=trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+  const avgPct=trades.filter(t=>t.pnlPct!==null);
+  const avgPnl=avgPct.length>0?avgPct.reduce((s,t)=>s+t.pnlPct,0)/avgPct.length:0;
+  const score=calcDisciplineScore(trades);
+  const moodMap={};trades.forEach(t=>{if(t.mood){const m=t.mood.mood;moodMap[m]=(moodMap[m]||0)+1;}});
+  const badMoodCnt=(moodMap.fomo||0)+(moodMap.emosional||0);
+  const goodMoodCnt=(moodMap.tenang||0)+(moodMap.sabar||0);
+  const moodsTotal=Object.values(moodMap).reduce((s,v)=>s+v,0);
+  let grade,gradeClass,charClass,charTitle;
+  if(score>=85){grade='S';gradeClass='rank-s';charClass='master';charTitle='Bijak Pasar';}
+  else if(score>=70){grade='A';gradeClass='rank-a';charClass='veteran';charTitle='Veteran Trader';}
+  else if(score>=55){grade='B';gradeClass='rank-b';charClass='apprentice';charTitle='Apprentice';}
+  else{grade='C';gradeClass='rank-c';charClass='rookie';charTitle='Rookie';}
+  const disciplineStat=score;
+  const patienceStat=moodsTotal>0?Math.round(goodMoodCnt/moodsTotal*100):50;
+  const riskStat=Math.max(0,100-Math.round(badMoodCnt/Math.max(1,moodsTotal)*100));
+  const profitStat=Math.min(100,wr);
+  const xpVal=Math.min(100,Math.round((score/100)*75+total*2));
+  const quests=[];
+  if(wr>=60)quests.push({icon:'🏆',title:'Winrate Discipline',desc:`WR ${wr}% tercapai`,reward:'+50 XP',done:true});
+  else quests.push({icon:'🎯',title:'Target Winrate 60%',desc:`WR kamu ${wr}% — ${60-wr}% lagi`,reward:'+50 XP',done:false});
+  if(goodMoodCnt>=Math.ceil(total*0.6))quests.push({icon:'🧘',title:'Emotional Control',desc:'Mayoritas entry mood tenang/sabar',reward:'+30 XP',done:true});
+  else quests.push({icon:'😤',title:'Kontrol FOMO',desc:`${badMoodCnt} entry mood buruk`,reward:'+30 XP',done:false});
+  const withNotes=trades.filter(t=>t.notes&&t.notes.length>5).length;
+  if(withNotes===total)quests.push({icon:'📝',title:'Journaling Master',desc:'Semua trade dicatat alasannya',reward:'+20 XP',done:true});
+  else quests.push({icon:'📝',title:'Catat Semua Alasan',desc:`${withNotes}/${total} trade punya catatan`,reward:'+20 XP',done:false});
+  if(total>=5)quests.push({icon:'⚡',title:`${total} Trade Aktif`,desc:'Konsisten trading minggu ini',reward:`+${total*5} XP`,done:true});
+  const scoreDesc=score>=85?'Disiplin luar biasa. Kamu trading seperti maestro — emosi terkontrol, catatan rapi, hasil konsisten.':score>=70?'Disiplin bagus! Masih ada ruang untuk improve — perhatikan mood saat entry.':score>=55?'Disiplin sedang. Fokus kurangi entry impulsif dan perbaiki dokumentasi trade.':'Disiplin perlu ditingkatkan. Mulai dari hal kecil: catat alasan setiap entry dan hindari FOMO.';
+
+  return `
+  <div class="weekly-stats-strip">
+    <div class="wstat"><div class="wstat-lbl">Trade</div><div class="wstat-val c-neutral">${total}</div></div>
+    <div class="wstat"><div class="wstat-lbl">WR%</div><div class="wstat-val ${wr>=50?'c-good':'c-bad'}">${wr}%</div></div>
+    <div class="wstat"><div class="wstat-lbl">P&L</div><div class="wstat-val ${totalPnl>=0?'c-good':'c-bad'}">${totalPnl>=0?'+':''}$${Math.abs(totalPnl).toFixed(2)}</div></div>
+    <div class="wstat"><div class="wstat-lbl">Avg%</div><div class="wstat-val ${avgPnl>=0?'c-good':'c-bad'}">${avgPnl>=0?'+':''}${avgPnl.toFixed(1)}%</div></div>
+  </div>
+  ${isAllTime?'<div style="margin:0.5rem 1.5rem 0;font-size:10px;color:var(--ink4);letter-spacing:0.08em;">* Menampilkan semua trade (belum ada trade minggu ini)</div>':''}
+
+  <div class="discipline-score-card">
+    <div class="discipline-score-label">Skor Disiplin Minggu Ini</div>
+    <div class="discipline-score-num" id="review-score-num">0<span class="score-denom">/100</span></div>
+    <span class="discipline-grade ${gradeClass}">${grade} Rank — ${charTitle}</span>
+    <div class="discipline-score-desc" style="margin-top:10px;">${scoreDesc}</div>
+  </div>
+
+  <div class="char-card">
+    <div class="char-card-bg"></div>
+    <div class="char-card-inner">
+      <div class="char-avatar">
+        ${buildAnimeChar(charClass,grade)}
+        <div class="char-rank-badge ${gradeClass}">${grade} RANK</div>
+      </div>
+      <div class="char-info">
+        <div class="char-name">${currentUser||'Trader'}</div>
+        <div class="char-class">${charTitle} · Base Kedai</div>
+        <div class="char-stats">
+          <div class="char-stat-row"><span class="char-stat-label">DISIPLIN</span><div class="char-stat-bar-bg"><div class="char-stat-bar-fill stat-discipline" data-w="${disciplineStat}" style="width:0%"></div></div><span class="char-stat-val">${disciplineStat}</span></div>
+          <div class="char-stat-row"><span class="char-stat-label">PATIENCE</span><div class="char-stat-bar-bg"><div class="char-stat-bar-fill stat-patience" data-w="${patienceStat}" style="width:0%"></div></div><span class="char-stat-val">${patienceStat}</span></div>
+          <div class="char-stat-row"><span class="char-stat-label">RISK CTRL</span><div class="char-stat-bar-bg"><div class="char-stat-bar-fill stat-risk" data-w="${riskStat}" style="width:0%"></div></div><span class="char-stat-val">${riskStat}</span></div>
+          <div class="char-stat-row"><span class="char-stat-label">PROFIT</span><div class="char-stat-bar-bg"><div class="char-stat-bar-fill stat-profit" data-w="${profitStat}" style="width:0%"></div></div><span class="char-stat-val">${profitStat}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="char-xp-wrap">
+      <div class="char-xp-label"><span>⚡ EXP</span><span id="review-xp-label">0 / 100 XP</span></div>
+      <div class="char-xp-bar-bg"><div class="char-xp-bar-fill" id="review-xp-bar" data-w="${xpVal}" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="quest-log">
+    <div class="quest-log-header"><span class="quest-log-icon">📜</span><span class="quest-log-title">Quest Log Minggu Ini</span></div>
+    ${quests.map(q=>`<div class="quest-item">
+      <span class="quest-icon">${q.icon}</span>
+      <div class="quest-text"><div class="quest-title">${q.title}</div><div class="quest-desc">${q.desc}</div><div class="quest-reward">🎁 ${q.reward}</div></div>
+      <span class="quest-status">${q.done?'✅':'⬜'}</span>
+    </div>`).join('')}
+  </div>
+
+  <div class="review-ai-section">
+    <div class="review-ai-header">
+      <i class="ti ti-robot" style="color:var(--gold);font-size:14px;"></i>
+      <span class="review-ai-title">AI Weekly Coach</span>
+      <span class="ai-narration-badge">Claude AI</span>
+    </div>
+    <div class="review-ai-body">
+      <div id="review-ai-loading" class="ai-narration-loading"><span class="spinner">⏳</span> Menyusun refleksi mingguanmu...</div>
+      <div id="review-ai-text" class="review-ai-text" style="display:none;"></div>
+    </div>
+  </div>
+
+  <button class="refresh-btn" onclick="renderWeeklyReview()"><i class="ti ti-refresh"></i> Refresh Review</button>`;
+}
+
+function buildAnimeChar(charClass, grade) {
+  const C={master:{hair:'#c8a832',eye:'#ffd700',robe:'#3a2808',accent:'#b8923a',aura:'rgba(184,146,58,0.25)'},veteran:{hair:'#2a5e40',eye:'#1D9E75',robe:'#162e20',accent:'#1D9E75',aura:'rgba(29,158,117,0.2)'},apprentice:{hair:'#3a4a7a',eye:'#5a7acb',robe:'#222840',accent:'#4a6aab',aura:'rgba(74,106,171,0.18)'},rookie:{hair:'#4a3020',eye:'#c05030',robe:'#2e1e14',accent:'#D85A30',aura:'rgba(216,90,48,0.15)'}};
+  const c=C[charClass]||C.rookie;
+  return `<svg viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="40" cy="90" rx="26" ry="5" fill="${c.aura}"/>
+    <path d="M20 58 Q18 73 16 88 L64 88 Q62 73 60 58 Q51 65 40 65 Q29 65 20 58Z" fill="${c.robe}"/>
+    <path d="M31 59 L40 70 L49 59" fill="none" stroke="${c.accent}" stroke-width="1.5" opacity="0.7"/>
+    <rect x="22" y="72" width="36" height="3" rx="1.5" fill="${c.accent}" opacity="0.5"/>
+    <path d="M20 63 Q12 70 14 78" stroke="${c.robe}" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <path d="M60 63 Q68 70 66 78" stroke="${c.robe}" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <circle cx="13" cy="79" r="4" fill="#e8c8a8"/>
+    <circle cx="67" cy="79" r="4" fill="#e8c8a8"/>
+    <rect x="34" y="47" width="12" height="12" rx="6" fill="#e8c8a8"/>
+    <ellipse cx="40" cy="35" rx="17" ry="18" fill="#e8c8a8"/>
+    <ellipse cx="40" cy="25" rx="17" ry="14" fill="${c.hair}"/>
+    ${charClass==='master'?`<path d="M24 29 Q22 16 30 12 Q36 9 40 11 Q44 9 50 12 Q58 16 56 29" fill="${c.hair}"/><path d="M38 11 L36 4 M40 10 L40 3 M42 11 L44 4" stroke="${c.accent}" stroke-width="1.5" stroke-linecap="round"/>`:charClass==='veteran'?`<path d="M24 30 Q22 17 30 13 Q36 9 42 12" fill="${c.hair}"/><path d="M40 12 Q50 9 54 15 Q58 21 56 30" fill="${c.hair}"/><path d="M29 13 Q26 6 30 5" fill="${c.hair}"/>`:charClass==='apprentice'?`<path d="M24 30 Q23 19 28 15 Q34 11 40 12 Q46 11 52 15 Q57 19 56 30" fill="${c.hair}"/><path d="M36 12 L34 6 M44 12 L46 6" stroke="${c.hair}" stroke-width="2" stroke-linecap="round"/>`:`<path d="M25 32 Q24 21 30 15 Q36 11 40 12 Q44 11 50 15 Q56 21 55 32" fill="${c.hair}"/>`}
+    <ellipse cx="23" cy="36" rx="4" ry="5" fill="#e8c8a8"/>
+    <ellipse cx="57" cy="36" rx="4" ry="5" fill="#e8c8a8"/>
+    <ellipse cx="33" cy="36" rx="4.5" ry="5" fill="white"/>
+    <ellipse cx="47" cy="36" rx="4.5" ry="5" fill="white"/>
+    <ellipse cx="33.5" cy="36.5" rx="3" ry="3.5" fill="${c.eye}"/>
+    <ellipse cx="47.5" cy="36.5" rx="3" ry="3.5" fill="${c.eye}"/>
+    <circle cx="34" cy="36" r="1.5" fill="#1a1814"/>
+    <circle cx="48" cy="36" r="1.5" fill="#1a1814"/>
+    <circle cx="34.8" cy="35.2" r="0.8" fill="white" opacity="0.9"/>
+    <circle cx="48.8" cy="35.2" r="0.8" fill="white" opacity="0.9"/>
+    <path d="M29 31 Q33 29 37 31" stroke="${c.hair}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M43 31 Q47 29 51 31" stroke="${c.hair}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M39 41 Q40 43 41 41" stroke="#c8a090" stroke-width="1" fill="none" opacity="0.5"/>
+    ${grade==='S'||grade==='A'?`<path d="M35 47 Q40 51 45 47" stroke="#c87060" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>`:`<path d="M36 48 Q40 46 44 48" stroke="#c87060" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5"/>`}
+    <text x="40" y="83" text-anchor="middle" font-size="9" fill="${c.accent}" opacity="0.7" font-family="serif">${grade}</text>
+    ${charClass==='master'?`<line x1="67" y1="79" x2="67" y2="56" stroke="${c.accent}" stroke-width="2" stroke-linecap="round"/><path d="M64 59 L67 53 L70 59" fill="${c.accent}" opacity="0.7"/>`:''}
+    ${charClass==='veteran'?`<rect x="64" y="61" width="3" height="17" rx="1.5" fill="${c.accent}" opacity="0.65"/>`:''}
+  </svg>`;
+}
+
+function animateReviewBars() {
+  const trades=getTrades();
+  const now=new Date();const ws=new Date(now);ws.setDate(now.getDate()-now.getDay());ws.setHours(0,0,0,0);
+  const wt=trades.filter(t=>t.ts>=ws.getTime());
+  const useTrades=wt.length>0?wt:trades.slice(0,10);
+  const score=calcDisciplineScore(useTrades);
+  const scoreEl=document.getElementById('review-score-num');
+  if(scoreEl){let curr=0;const iv=setInterval(()=>{curr=Math.min(curr+2,score);scoreEl.innerHTML=curr+'<span class="score-denom">/100</span>';if(curr>=score)clearInterval(iv);},18);}
+  document.querySelectorAll('.char-stat-bar-fill').forEach(el=>{const w=el.dataset.w;if(w)setTimeout(()=>{el.style.width=w+'%';},200);});
+  const xpBar=document.getElementById('review-xp-bar');
+  const xpLabel=document.getElementById('review-xp-label');
+  if(xpBar)setTimeout(()=>{xpBar.style.width=xpBar.dataset.w+'%';if(xpLabel)xpLabel.textContent=xpBar.dataset.w+' / 100 XP';},400);
+}
+
+async function loadReviewAI(trades) {
+  const wins=trades.filter(t=>t.result==='profit');
+  const wr=Math.round(wins.length/trades.length*100);
+  const totalPnl=trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+  const score=calcDisciplineScore(trades);
+  const moodMap={};trades.forEach(t=>{if(t.mood){const m=t.mood.mood;moodMap[m]=(moodMap[m]||0)+1;}});
+  const notesSample=trades.filter(t=>t.notes).slice(0,4).map(t=>t.notes).join('; ');
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:600,
+        system:'Kamu adalah trading coach mingguan yang hangat dan jujur untuk komunitas trader crypto modal kecil Indonesia.',
+        messages:[{role:'user',content:`Trader: ${currentUser||'trader'}. ${trades.length} trade minggu ini. WR: ${wr}%. PnL: ${totalPnl>=0?'+':''}$${Math.abs(totalPnl).toFixed(2)}. Skor Disiplin: ${score}/100. Mood: ${JSON.stringify(moodMap)}. Catatan: "${notesSample}". Tulis refleksi mingguan singkat: (1) pembuka personal 2 kalimat, (2) apresiasi hal positif dari data, (3) area perbaikan minggu depan, (4) 1 misi konkret, (5) penutup motivasi. Max 8 kalimat total. Bahasa Indonesia casual tapi berbobot.`}]
+      })
+    });
+    if(resp.ok){const d=await resp.json();const t=d.content?.[0]?.text||'';if(t){document.getElementById('review-ai-loading').style.display='none';const el=document.getElementById('review-ai-text');el.style.display='block';el.innerHTML=t.replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');return;}}
+  } catch(e){}
+  // Fallback
+  document.getElementById('review-ai-loading').style.display='none';
+  const el=document.getElementById('review-ai-text');el.style.display='block';
+  const moodLbls={tenang:'tenang 😌',sabar:'sabar 😎',fomo:'FOMO 😰',emosional:'emosional 😤'};
+  const badMoods=(moodMap.fomo||0)+(moodMap.emosional||0);
+  let txt=`<strong>${currentUser||'Trader'}</strong>, minggu ini kamu mencatat ${trades.length} trade dengan winrate ${wr}% dan PnL ${totalPnl>=0?'+':''}$${Math.abs(totalPnl).toFixed(2)}.<br><br>`;
+  if(wr>=60)txt+=`Yang positif: winrate di atas 60% — sistemmu mulai terbentuk. `;else txt+=`Winrate ${wr}% masih ada ruang improve — ini proses yang normal. `;
+  if(badMoods===0)txt+=`Semua entry dengan mood terkontrol — ini fondasi penting yang harus dipertahankan!<br><br>`;else txt+=`Ada ${badMoods} entry dengan mood FOMO/emosional yang perlu diperhatikan serius.<br><br>`;
+  if(score>=70)txt+=`Skor disiplin ${score}/100 — kamu mulai serius dengan proses, bukan cuma hasil. Tantangan minggu depan: pertahankan konsistensi ini dan mulai perhatikan sizing per trade.`;else txt+=`Fokus minggu depan: catat semua alasan entry dan hindari trade saat emosi tidak stabil. Skor disiplin ${score}/100 masih bisa naik jauh — kamu bisa!`;
+  el.innerHTML=txt;
+}
+</script>
+
+<div id="profile-floating-btn">✦</div>
+
+<div id="profile-panel">
+  <!-- Rank Header -->
+  <div class="profile-top">
+    <div class="profile-avatar" id="profile-avatar">A</div>
+    <div style="flex:1;">
+      <div class="profile-name" id="profile-name">Afeng</div>
+      <div class="profile-class" id="profile-class-label">BASE TRENCHER · LVL 3</div>
+      <!-- Rank Badge -->
+      <div id="profile-rank-badge" class="profile-rank-badge rank-newbie">⚔️ NEWBIE</div>
+    </div>
+  </div>
+
+  <!-- XP Progress to next rank -->
+  <div class="profile-xp-section">
+    <div class="profile-xp-labels">
+      <span id="profile-xp-current" style="font-size:10px;color:#8a6535;font-weight:600;">$0 profit</span>
+      <span id="profile-xp-next" style="font-size:10px;color:#b8a090;">next: $500</span>
+    </div>
+    <div class="profile-xp-bar-bg">
+      <div class="profile-xp-bar-fill" id="profile-xp-fill" style="width:0%"></div>
+    </div>
+    <div id="profile-rank-flavor" style="font-size:10px;color:#a08060;margin-top:6px;font-style:italic;text-align:center;">Baru mulai perjalanan trading-mu...</div>
+  </div>
+
+  <!-- Rank Tiers Preview -->
+  <div class="profile-rank-tiers">
+    <div class="rank-tier-item" id="rtier-newbie">
+      <span class="rank-tier-icon">⚔️</span>
+      <span class="rank-tier-name">NEWBIE</span>
+    </div>
+    <div class="rank-tier-item" id="rtier-advanced">
+      <span class="rank-tier-icon">🗡️</span>
+      <span class="rank-tier-name">ADVANCED</span>
+    </div>
+    <div class="rank-tier-item" id="rtier-expert">
+      <span class="rank-tier-icon">🏹</span>
+      <span class="rank-tier-name">EXPERT</span>
+    </div>
+    <div class="rank-tier-item" id="rtier-master">
+      <span class="rank-tier-icon">🔱</span>
+      <span class="rank-tier-name">MASTER</span>
+    </div>
+    <div class="rank-tier-item" id="rtier-legend">
+      <span class="rank-tier-icon">👑</span>
+      <span class="rank-tier-name">LEGEND</span>
+    </div>
+  </div>
+
+  <!-- MMORPG Stats -->
+  <div class="mmorpg-stats" style="margin-top:12px;">
+    <div class="mmorpg-row">
+      <div class="mmorpg-label">DISCIPLINE</div>
+      <div class="mmorpg-bar"><div class="mmorpg-fill" id="stat-discipline-fill" style="width:0%"></div></div>
+      <div class="mmorpg-value" id="stat-discipline-val">—</div>
+    </div>
+    <div class="mmorpg-row">
+      <div class="mmorpg-label">RISK CTRL</div>
+      <div class="mmorpg-bar"><div class="mmorpg-fill" id="stat-risk-fill" style="width:0%"></div></div>
+      <div class="mmorpg-value" id="stat-risk-val">—</div>
+    </div>
+    <div class="mmorpg-row">
+      <div class="mmorpg-label">PATIENCE</div>
+      <div class="mmorpg-bar"><div class="mmorpg-fill" id="stat-patience-fill" style="width:0%"></div></div>
+      <div class="mmorpg-value" id="stat-patience-val">—</div>
+    </div>
+    <div class="mmorpg-row">
+      <div class="mmorpg-label">WINRATE</div>
+      <div class="mmorpg-bar"><div class="mmorpg-fill" id="stat-wr-fill" style="width:0%"></div></div>
+      <div class="mmorpg-value" id="stat-wr-val">—</div>
+    </div>
+  </div>
+
+  <!-- Total Profit display -->
+  <div style="margin-top:12px;padding:10px 12px;background:rgba(139,100,50,0.08);border-radius:10px;border:1px solid rgba(139,100,50,0.18);text-align:center;">
+    <div style="font-size:9px;letter-spacing:.2em;color:#a08060;text-transform:uppercase;margin-bottom:4px;">Total Profit Terkumulasi</div>
+    <div style="font-size:20px;font-weight:700;color:#6b4c1e;" id="profile-total-profit">$0.00</div>
+    <div style="font-size:10px;color:#b8a090;margin-top:2px;" id="profile-trade-count">0 trade tercatat</div>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  const tgInput = document.getElementById('tg-input');
+  const loginBtn = document.getElementById('login-btn');
+
+  // ═══ RANK SYSTEM ═══
+  const RANKS = [
+    { key:'newbie',   label:'⚔️ NEWBIE',   minProfit: 0,     nextProfit: 500,   lvl: 3,  flavor: 'Baru mulai perjalanan trading-mu...', cssClass:'rank-newbie'  },
+    { key:'advanced', label:'🗡️ ADVANCED',  minProfit: 500,   nextProfit: 2000,  lvl: 12, flavor: 'Kamu udah punya ritme. Konsistensi adalah kuncinya!', cssClass:'rank-advanced' },
+    { key:'expert',   label:'🏹 EXPERT',    minProfit: 2000,  nextProfit: 5000,  lvl: 25, flavor: 'Level serius. Disiplin & risk management sudah terasa.', cssClass:'rank-expert'  },
+    { key:'master',   label:'🔱 MASTER',    minProfit: 5000,  nextProfit: 10000, lvl: 35, flavor: 'Kelas master. Tidak banyak yang sampai sini!', cssClass:'rank-master'  },
+    { key:'legend',   label:'👑 LEGEND',    minProfit: 10000, nextProfit: null,  lvl: 50, flavor: '👑 Kamu adalah LEGEND di komunitas ini. Respect!', cssClass:'rank-legend'  },
+  ];
+
+  function getRank(totalProfit) {
+    let rank = RANKS[0];
+    for (const r of RANKS) {
+      if (totalProfit >= r.minProfit) rank = r;
+    }
+    return rank;
+  }
+
+  function getTotalProfitFromStorage(user) {
+    try {
+      const dungeon = localStorage.getItem('kedai_afeng_dungeon') || 'base';
+      const key = 'kedai_' + (user||'guest') + '_' + dungeon + '_trades';
+      const trades = JSON.parse(localStorage.getItem(key)||'[]');
+      const totalProfit = trades.reduce((s,t)=>s+(t.pnlUsd>0?t.pnlUsd:0),0);
+      const totalPnl = trades.reduce((s,t)=>s+(t.pnlUsd||0),0);
+      return { totalProfit, totalPnl, trades };
+    } catch { return { totalProfit:0, totalPnl:0, trades:[] }; }
+  }
+
+  function calcLiveStats(trades) {
+    if (!trades || trades.length === 0) return { discipline:0, riskCtrl:0, patience:0, winrate:0 };
+    const wins = trades.filter(t=>t.result==='profit').length;
+    const winrate = Math.round(wins/trades.length*100);
+    const badMoodCount = trades.filter(t=>t.mood&&(t.mood.mood==='fomo'||t.mood.mood==='emosional')).length;
+    const patience = Math.max(0, Math.round(100 - (badMoodCount/trades.length)*100));
+    const hasNotes = trades.filter(t=>t.notes&&t.notes.length>5).length;
+    const discipline = Math.min(100, Math.round((hasNotes/trades.length)*70 + (winrate*0.3)));
+    const avgPnl = trades.filter(t=>t.pnlPct!==null).length > 0
+      ? trades.filter(t=>t.pnlPct!==null).reduce((s,t)=>s+t.pnlPct,0)/trades.filter(t=>t.pnlPct!==null).length : 0;
+    const riskCtrl = Math.min(100, Math.round(50 + Math.min(50, avgPnl)));
+    return { discipline, riskCtrl, patience, winrate };
+  }
+
+  function updateProfilePanel(user) {
+    const { totalProfit, totalPnl, trades } = getTotalProfitFromStorage(user);
+    const rank = getRank(totalProfit);
+    const stats = calcLiveStats(trades);
+
+    // Rank badge
+    const badge = document.getElementById('profile-rank-badge');
+    if (badge) {
+      badge.textContent = rank.label;
+      badge.className = 'profile-rank-badge ' + rank.cssClass;
+    }
+
+    // Class label
+    const classLabel = document.getElementById('profile-class-label');
+    if (classLabel) {
+      const dungeon = localStorage.getItem('kedai_afeng_dungeon') || 'base';
+      classLabel.textContent = (dungeon === 'sol' ? 'SOL' : 'BASE') + ' TRENCHER · LVL ' + rank.lvl;
+    }
+
+    // XP bar
+    const xpFill = document.getElementById('profile-xp-fill');
+    const xpCurrent = document.getElementById('profile-xp-current');
+    const xpNext = document.getElementById('profile-xp-next');
+    const rankFlavor = document.getElementById('profile-rank-flavor');
+    if (xpFill && rank.nextProfit) {
+      const pct = Math.min(100, Math.round((totalProfit - rank.minProfit) / (rank.nextProfit - rank.minProfit) * 100));
+      xpFill.style.width = pct + '%';
+      if (xpCurrent) xpCurrent.textContent = '$' + totalProfit.toFixed(0) + ' profit';
+      if (xpNext) xpNext.textContent = 'next: $' + rank.nextProfit;
+    } else if (xpFill) {
+      xpFill.style.width = '100%';
+      if (xpCurrent) xpCurrent.textContent = '$' + totalProfit.toFixed(0) + ' profit';
+      if (xpNext) xpNext.textContent = '👑 MAX RANK';
+    }
+    if (rankFlavor) rankFlavor.textContent = rank.flavor;
+
+    // Rank tier highlights
+    RANKS.forEach(r => {
+      const el = document.getElementById('rtier-' + r.key);
+      if (!el) return;
+      if (r.key === rank.key) { el.classList.add('active'); el.classList.remove('achieved'); }
+      else if (totalProfit >= r.minProfit) { el.classList.add('achieved'); el.classList.remove('active'); }
+      else { el.classList.remove('active','achieved'); }
+    });
+
+    // MMORPG stat bars
+    function setStat(id, fillId, val) {
+      const el = document.getElementById(id); const fill = document.getElementById(fillId);
+      if (el) el.textContent = val;
+      if (fill) fill.style.width = val + '%';
+    }
+    setStat('stat-discipline-val','stat-discipline-fill', stats.discipline);
+    setStat('stat-risk-val','stat-risk-fill', stats.riskCtrl);
+    setStat('stat-patience-val','stat-patience-fill', stats.patience);
+    setStat('stat-wr-val','stat-wr-fill', stats.winrate);
+
+    // Total profit
+    const profitEl = document.getElementById('profile-total-profit');
+    const tradeCountEl = document.getElementById('profile-trade-count');
+    if (profitEl) {
+      const sign = totalPnl >= 0 ? '+' : '';
+      profitEl.textContent = sign + '$' + Math.abs(totalPnl).toFixed(2);
+      profitEl.style.color = totalPnl >= 0 ? '#1a7a50' : '#c04030';
+    }
+    if (tradeCountEl) tradeCountEl.textContent = trades.length + ' trade tercatat';
+
+    // Level badge in home page (if exists)
+    const levelNode = document.getElementById('user-level');
+    const badgeNode = document.querySelector('.level-badge');
+    if (levelNode) levelNode.textContent = rank.lvl;
+    if (badgeNode) badgeNode.innerHTML = rank.label + ' · LVL ' + rank.lvl;
+  }
+
+  function calculateLevel(totalProfit){
+    if(totalProfit >= 10000) return {lvl: 50, rank:'LEGEND'};
+    if(totalProfit >= 5000) return {lvl: 35, rank:'MASTER'};
+    if(totalProfit >= 2000) return {lvl: 25, rank:'EXPERT'};
+    if(totalProfit >= 500) return {lvl: 12, rank:'ADVANCED'};
+    return {lvl: 3, rank:'NEWBIE'};
+  }
+
+  const savedUser = localStorage.getItem('kedai_afeng_user');
+
+  if(savedUser && tgInput){
+    tgInput.value = savedUser;
+    const profileName = document.getElementById('profile-name');
+    const profileAvatar = document.getElementById('profile-avatar');
+    if(profileName) profileName.textContent = '@' + savedUser;
+    if(profileAvatar) profileAvatar.textContent = savedUser.charAt(0).toUpperCase();
+    updateProfilePanel(savedUser);
+  }
+
+  if(loginBtn){
+    loginBtn.addEventListener('click', ()=>{
+      const username = tgInput.value.trim().replace('@','');
+      if(username){
+        localStorage.setItem('kedai_afeng_user', username);
+        const profileName = document.getElementById('profile-name');
+        const profileAvatar = document.getElementById('profile-avatar');
+        if(profileName) profileName.textContent = '@' + username;
+        if(profileAvatar) profileAvatar.textContent = username.charAt(0).toUpperCase();
+        updateProfilePanel(username);
+      }
+    });
+  }
+
+  const profileBtn = document.getElementById('profile-floating-btn');
+  const profilePanel = document.getElementById('profile-panel');
+
+  if(profileBtn && profilePanel){
+    profileBtn.addEventListener('click', ()=>{
+      profilePanel.classList.toggle('open');
+      // Refresh stats every time panel opens
+      const u = localStorage.getItem('kedai_afeng_user') || 'guest';
+      updateProfilePanel(u);
+    });
+
+    document.addEventListener('click', (e)=>{
+      if(!profilePanel.contains(e.target) && !profileBtn.contains(e.target)){
+        profilePanel.classList.remove('open');
+      }
+    });
+  }
+
+  const logoutCandidates = [
+    document.querySelector('[data-signout]'),
+    document.querySelector('.signout-btn'),
+    document.querySelector('#signout-btn'),
+    document.querySelector('.icon-btn')
+  ];
+
+  logoutCandidates.forEach(btn=>{
+    if(btn){
+      btn.classList.add('logout-hitbox');
+      btn.addEventListener('touchstart', ()=>{}, {passive:true});
+    }
+  });
+
+  // Expose updateProfilePanel globally so trade save can refresh it
+  window._refreshProfilePanel = function() {
+    const u = localStorage.getItem('kedai_afeng_user') || 'guest';
+    updateProfilePanel(u);
+  };
+})();
+</script>
+
+
+</body>
+</html>
